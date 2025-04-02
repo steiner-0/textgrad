@@ -1,4 +1,3 @@
-# claude_token_efficiency_loss.py
 from textgrad.variable import Variable
 from textgrad.autograd import Module
 from textgrad.autograd import FormattedLLMCall

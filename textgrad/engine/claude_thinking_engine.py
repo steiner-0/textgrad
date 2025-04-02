@@ -1,6 +1,7 @@
 from textgrad.engine.anthropic import ChatAnthropic
 import os
 from anthropic import Anthropic
+import tiktoken
 
 class ThinkingChatAnthropic(ChatAnthropic):
     """Extended ChatAnthropic engine with thinking parameter support."""
@@ -12,8 +13,9 @@ class ThinkingChatAnthropic(ChatAnthropic):
         super().__init__(model_string=model_string, system_prompt=system_prompt)
         self.thinking_enabled = thinking_enabled
         self.thinking_budget = thinking_budget
+        self.last_thinking = None
     
-    def generate(self, prompt, system_prompt=None, temperature=0, max_tokens=2000, top_p=0.99):
+    def generate(self, prompt, system_prompt=None, temperature=0, max_tokens=20000, top_p=0.99):
         """Override generate to include thinking parameter."""
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
@@ -37,32 +39,22 @@ class ThinkingChatAnthropic(ChatAnthropic):
                 {"role": "user", "content": prompt}
             ],
             system=sys_prompt_arg,
-            temperature=temperature,
             max_tokens=max_tokens,
-            top_p=top_p,
             thinking=thinking_config
         )
         
         # Get response text
-        response_text = response.content[0].text
+        response_text = response.content[1].text
         
         # Cache the result
         self._save_cache(sys_prompt_arg + prompt, response_text)
         
         # Store thinking in a property that can be accessed
-        self.last_thinking = response.content[0].thinking if hasattr(response.content[0], 'thinking') else None
+        self.last_thinking = response.content[0].thinking 
         
         return response_text
     
     def get_last_thinking_tokens(self):
         """Get token count from the last thinking process."""
-        if hasattr(self, 'last_thinking') and self.last_thinking:
-            # If the API provides token counts directly
-            if hasattr(self.last_thinking, 'token_count'):
-                return self.last_thinking.token_count
-            # Otherwise, estimate token count from the thinking text
-            elif hasattr(self.last_thinking, 'text'):
-                import tiktoken
-                encoder = tiktoken.get_encoding("cl100k_base")
-                return len(encoder.encode(self.last_thinking.text))
-        return 0
+        encoder = tiktoken.get_encoding("cl100k_base")
+        return len(encoder.encode(self.last_thinking))

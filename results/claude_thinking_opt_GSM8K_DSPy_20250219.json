@@ -1,0 +1,242 @@
+{
+  "initial_prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+  "epochs": [
+    {
+      "epoch": 0,
+      "prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+      "steps": [
+        {
+          "question": "Question: A bowl of fruit holds 18 peaches. Four of the peaches are ripe and two more ripen every day, but on the third day three are eaten. How many more ripe peaches than unripe peaches are in the bowl after five days?",
+          "answer": "7",
+          "response": "To solve this problem, I need to track the number of ripe and unripe peaches over the 5-day period.\n\nStarting conditions:\n- Total peaches: 18\n- Ripe peaches: 4\n- Unripe peaches: 18 - 4 = 14\n\nDay 1:\n- 2 more peaches ripen\n- Ripe peaches: 4 + 2 = 6\n- Unripe peaches: 14 - 2 = 12\n- Total: 18\n\nDay 2:\n- 2 more peaches ripen\n- Ripe peaches: 6 + 2 = 8\n- Unripe peaches: 12 - 2 = 10\n- Total: 18\n\nDay 3:\n- 2 more peaches ripen\n- 3 ripe peaches are eaten\n- Ripe peaches: 8 + 2 - 3 = 7\n- Unripe peaches: 10 - 2 = 8\n- Total: 15\n\nDay 4:\n- 2 more peaches ripen\n- Ripe peaches: 7 + 2 = 9\n- Unripe peaches: 8 - 2 = 6\n- Total: 15\n\nDay 5:\n- 2 more peaches ripen\n- Ripe peaches: 9 + 2 = 11\n- Unripe peaches: 6 - 2 = 4\n- Total: 15\n\nAfter 5 days, there are 11 ripe peaches and 4 unripe peaches.\nThe difference is 11 - 4 = 7.\n\nAnswer: 7",
+          "accuracy": 1,
+          "thinking_tokens": 420
+        },
+        {
+          "question": "Question: John needs to replace his shoes so he decides to buy a $150 pair of Nikes and a $120 pair of work boots.  Tax is 10%.  How much did he pay for everything?",
+          "answer": "297",
+          "response": "I need to find the total cost including tax.\n\nStep 1: Calculate the total cost before tax.\n- Price of Nike shoes = $150\n- Price of work boots = $120\n- Total before tax = $150 + $120 = $270\n\nStep 2: Calculate the tax amount.\n- Tax rate = 10%\n- Tax amount = 10% of $270 = 0.10 \u00d7 $270 = $27\n\nStep 3: Calculate the final total including tax.\n- Total cost = Cost before tax + Tax amount\n- Total cost = $270 + $27 = $297\n\nAnswer: $297",
+          "accuracy": 1,
+          "thinking_tokens": 378
+        },
+        {
+          "question": "Question: Barry has $10.00 worth of dimes.  His little brother, Dan has half that amount but finds 2 more dimes on his way home from school.  How many dimes does Dan have?",
+          "answer": "52",
+          "response": "To solve this problem, I need to track how many dimes Dan has.\n\nStep 1: Figure out how many dimes Barry has.\nBarry has $10.00 worth of dimes.\nEach dime is worth $0.10\n$10.00 \u00f7 $0.10 = 100 dimes\nSo Barry has 100 dimes.\n\nStep 2: Calculate how many dimes Dan has initially.\nDan has half the amount that Barry has.\nHalf of 100 dimes = 50 dimes\nSo Dan starts with 50 dimes.\n\nStep 3: Add the dimes that Dan found.\nDan finds 2 more dimes.\n50 dimes + 2 dimes = 52 dimes\n\nAnswer: 52",
+          "accuracy": 1,
+          "thinking_tokens": 1768
+        },
+        {
+          "question": "Question: My mother celebrated her birthday with a total of 60 guests. Half of the guests are women, 15 are men, and the rest are children. In the middle of the celebration, 1/3 of the men and 5 children left. How many people stayed and enjoyed the birthday celebration?",
+          "answer": "50",
+          "response": "Starting with 60 total guests:\n- Women = 60 \u00d7 0.5 = 30\n- Men = 15\n- Children = 60 - 30 - 15 = 15\n\nPeople who left:\n- Men who left = 15 \u00d7 (1/3) = 5\n- Children who left = 5\n- Total who left = 5 + 5 = 10\n\nPeople who stayed = 60 - 10 = 50\n\nAnswer: 50",
+          "accuracy": 1,
+          "thinking_tokens": 320
+        },
+        {
+          "question": "Question: Cheryl placed 300 strawberries into 5 buckets. After she did that she decided to take 20 out of each bucket so they wouldn't get smashed. How many strawberries were left in each bucket?",
+          "answer": "40",
+          "response": "5 buckets total, 300 strawberries total:\nInitial strawberries per bucket = 300 \u00f7 5 = 60\n\nAfter removing 20 from each bucket:\nStrawberries remaining per bucket = 60 - 20 = 40\n\nAnswer: 40",
+          "accuracy": 1,
+          "thinking_tokens": 412
+        },
+        {
+          "question": "Question: The community leader of a certain town organized a cleaning day event where community members were to be involved in collecting trash inside the town. Out of 2000 community members involved in the cleaning process, 30% were adult men. If there were twice as many adult women as adult men in the event, and the rest were children, calculate the total number of children involved in the cleaning event.",
+          "answer": "200",
+          "response": "$M = \\text{number of adult men}$\n$W = \\text{number of adult women}$\n$C = \\text{number of children}$\n\nTotal participants = 2000\n$M = 30\\% \\times 2000 = 0.3 \\times 2000 = 600$\n$W = 2M = 2 \\times 600 = 1200$\n\n$C = 2000 - M - W = 2000 - 600 - 1200 = 200$\n\nAnswer: 200",
+          "accuracy": 1,
+          "thinking_tokens": 458
+        },
+        {
+          "question": "Question: A store gives a 10% discount for the amount of the sell that was over $1000.  John buys 7 items that each cost $200.  What does his order cost after the discount?",
+          "answer": "1360",
+          "response": "n = 7\np = 200\nt = n\u00b7p = 7\u00b7200 = 1400\nd = 0.1(t-1000) = 0.1(1400-1000) = 0.1\u00b7400 = 40\nA: 1400-40 = 1360",
+          "accuracy": 1,
+          "thinking_tokens": 440
+        },
+        {
+          "question": "Question: James takes a spinning class 3 times a week.  He works out for 1.5 hours each class and burns 7 calories per minute.  How many calories does he burn per week?",
+          "answer": "1890",
+          "response": "VARIABLES: f=3, h=1.5, m=60, c=7\n\nCALCULATION:\nt=h\u00d7m=1.5\u00d760=90\nw=c\u00d7t\u00d7f=7\u00d790\u00d73=7\u00d7270=1890\n\nA: 1890",
+          "accuracy": 1,
+          "thinking_tokens": 465
+        },
+        {
+          "question": "Question: Brandon has been fired from half the businesses in town and has quit from a third of them. If there are 72 business in town, how many businesses can he still apply to?",
+          "answer": "12",
+          "response": "t=72\nf=0.5t=36\nq=(1/3)t=24\na=t-f-q=72-36-24=12\n\nA: 12",
+          "accuracy": 1,
+          "thinking_tokens": 456
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "thinking_tokens": 250.8,
+        "accuracy_stdev": 0.0,
+        "thinking_tokens_stdev": 58.39657524204652
+      }
+    },
+    {
+      "epoch": 1,
+      "prompt": "Solve math in <75 tokens:\n- Identify pattern first (rate, percentage, geometry)\n- Calculate directly when possible (72\u00d70.25=18)\n- Define variables in-line only when needed (t=72, a=t-t/2-t/3=t/6=12)\n- Standardize units immediately (1.5h=90min)\n- Chain operations (n=3, t=90min, r=7cal/min, total=n\u00d7t\u00d7r=3\u00d790\u00d77=1890)\n- End with A: [value]",
+      "steps": [
+        {
+          "question": "Question: Joshua and Justin shared $40. Joshua\u2019s share was thrice as much as Justin\u2019s. How much is Joshua's share?",
+          "answer": "30",
+          "response": "Let's solve:\n- j + u = 40 (total money)\n- j = 3u (Joshua gets 3 times Justin's amount)\n\nSubstituting j = 3u into the first equation:\n3u + u = 40\n4u = 40\nu = 10\n\nSo Joshua's share is j = 3u = 3\u00d710 = 30\n\nA: $30",
+          "accuracy": 1,
+          "thinking_tokens": 508
+        },
+        {
+          "question": "Question: Jared wants to watch a series with four episodes. The first three episodes are 58 minutes, 62 minutes, and 65 minutes long respectively. If the four episodes last 4 hours, how long is the fourth episode?",
+          "answer": "55",
+          "response": "First, I'll find the total length of the first three episodes:\n58 + 62 + 65 = 185 minutes\n\nThe total time for all four episodes is 4 hours = 240 minutes\n\nLength of fourth episode = 240 - 185 = 55 minutes\n\nA: 55 minutes",
+          "accuracy": 1,
+          "thinking_tokens": 650
+        },
+        {
+          "question": "Question: James needs 40 fish to make one sushi roll. He goes to the market and buys 400 fish, but later finds out that 20% of the fish have gone bad and cannot be used. How many sushi rolls did James make with the remaining fish?",
+          "answer": "8",
+          "response": "James buys 400 fish initially.\n20% of these fish have gone bad: 0.2 \u00d7 400 = 80 fish\nUsable fish = 400 - 80 = 320 fish\nEach roll requires 40 fish\nNumber of rolls = 320 \u00f7 40 = 8\n\nA: 8",
+          "accuracy": 1,
+          "thinking_tokens": 1590
+        },
+        {
+          "question": "Question: Stephen made 10 round trips up and down a 40,000 foot tall mountain. If he reached 3/4 of the mountain's height on each of his trips, calculate the total distance he covered.",
+          "answer": "600000",
+          "response": "(3/4)\u00d740,000\u00d710\u00d72=30,000\u00d710\u00d72=600,000\nA: 600,000 feet",
+          "accuracy": 0,
+          "thinking_tokens": 487
+        },
+        {
+          "question": "Question: Kara has to drink 4 ounces of water every time she takes her medication. Her medication instructions are to take one tablet three times a day. She followed the instructions for one week, but in the second week, she forgot twice on one day. How many ounces of water did she drink with her medication over those two weeks?",
+          "answer": "160",
+          "response": "4\u00d73\u00d77 + 4\u00d73\u00d76 + 4\u00d71 = 84 + 72 + 4 = 160\n\nA: 160 ounces",
+          "accuracy": 1,
+          "thinking_tokens": 554
+        },
+        {
+          "question": "Question: On Miss Lawrence's math exam, 80% of the 50 questions are problem-solving while the rest are multiple-choice questions. How many multiple-choice questions are there?",
+          "answer": "10",
+          "response": "50\u00d7(1-0.8)=50\u00d70.2=10\nA: 10",
+          "accuracy": 1,
+          "thinking_tokens": 2148
+        },
+        {
+          "question": "Question: Apollo pulls the sun across the sky every night. Once a month, his fiery chariot\u2019s wheels need to be replaced. He trades golden apples to Hephaestus the blacksmith to get Hephaestus to make him new wheels. Hephaestus raised his rates halfway through the year and now demands twice as many golden apples as before. He charged three golden apples for the first six months. How many golden apples does Apollo have to pay for the entire year of chariot wheels?",
+          "answer": "54",
+          "response": "First 6 months: 6 months \u00d7 3 apples = 18 apples\nSecond 6 months: 6 months \u00d7 6 apples = 36 apples\nTotal: 18 + 36 = 54 apples\n\nA: 54",
+          "accuracy": 1,
+          "thinking_tokens": 583
+        },
+        {
+          "question": "Question: A YouTube video got 3000 likes and 100 more than half as many dislikes. If the video gets 1000 more dislikes and 0 more likes how many dislikes does the video have?",
+          "answer": "2600",
+          "response": "Dislikes = 100 + 3000/2 = 100 + 1500 = 1600\nFinal dislikes = 1600 + 1000 = 2600\n\nA: 2600",
+          "accuracy": 1,
+          "thinking_tokens": 615
+        },
+        {
+          "question": "Question: Anna has a certain number of phone chargers and five times more laptop chargers than phone chargers. If she has 24 chargers total, how many phone chargers does she have?",
+          "answer": "4",
+          "response": "p + 5p = 24\n6p = 24\np = 4\n\nA: 4",
+          "accuracy": 1,
+          "thinking_tokens": 553
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "thinking_tokens": 267.8,
+        "accuracy_stdev": 0.0,
+        "thinking_tokens_stdev": 106.83520019169713
+      }
+    },
+    {
+      "epoch": 2,
+      "prompt": "\u26a0\ufe0f<75 TOKENS=FAIL\u26a0\ufe0f COUNT AS YOU GO!\n- Identify formula \u2192 one-step calculation\n- No explanations/variables\n- Combine all operations\n- Share/ratio: t/(n+1) directly\nFormat: [calculation] A: [value]",
+      "steps": [
+        {
+          "question": "Question: Ruel has four books of 10 stamps and six books of 15 stamps. How many stamps does Ruel have?",
+          "answer": "130",
+          "response": "4\u00d710+6\u00d715=40+90=130 A: 130",
+          "accuracy": 1,
+          "thinking_tokens": 874
+        },
+        {
+          "question": "Question: A type C school bus contains 13 rows of seats, with an aisle running down the middle of the bus, splitting each row into two sections.  If the school only allowed two students to sit in each section, how many students could be seated on the bus?",
+          "answer": "52",
+          "response": "13\u00d72\u00d72=52 A: 52",
+          "accuracy": 1,
+          "thinking_tokens": 726
+        },
+        {
+          "question": "Question: Anna goes trick-or-treating in a subdivision where she gets 14 pieces of candy per house. Her brother Billy goes trick-or-tricking in a neighboring subdivision where he gets 11 pieces of candy per house. If the first subdivision has 60 houses and the second subdivision has 75 houses, how many more pieces of candy does Anna get?",
+          "answer": "15",
+          "response": "14\u00d760-11\u00d775 A: 15",
+          "accuracy": 1,
+          "thinking_tokens": 1071
+        },
+        {
+          "question": "Question: A rancher has 340 head of cattle. He was about to sell them all for $204,000 when 172 of them fell sick and died. Because of the sickness, his customers lost confidence in his cattle, forcing him to lower his price by $150 per head. How much money would the devastated farmer lose if he sold the remaining cattle at the lowered price compared to the amount he would have made by selling them at the original price?",
+          "answer": "25200",
+          "response": "[168\u00d7(600-450)=25200] A: $25,200",
+          "accuracy": 1,
+          "thinking_tokens": 615
+        },
+        {
+          "question": "Question: Sue works in a factory and every 30 minutes, a machine she oversees produces 30 cans of soda. How many cans of soda can one machine produce in 8 hours?",
+          "answer": "480",
+          "response": "[8\u00d760\u00f730\u00d730=480] A: 480",
+          "accuracy": 1,
+          "thinking_tokens": 551
+        },
+        {
+          "question": "Question: The treasurer of a football team must buy equipment for the sixteen players of his team. Each piece of equipment consists of a $25 jersey, a $15.20 pair of shorts and a pair of socks at $6.80. How much does all the equipment of all the players on the team cost?",
+          "answer": "752",
+          "response": "[(25+15.20+6.80)\u00d716=752] A: 752",
+          "accuracy": 1,
+          "thinking_tokens": 479
+        },
+        {
+          "question": "Question: Jorge is 24 years younger than Simon. In 2005, Jorge is 16 years old. In 2010, how old would Simon be?",
+          "answer": "45",
+          "response": "[16+24+5=45]",
+          "accuracy": 1,
+          "thinking_tokens": 415
+        },
+        {
+          "question": "Question: Theo and Tia are buying food for their picnic basket.  They invited two of their friends. They buy individual sandwiches and individual fruit salads. They buy two sodas per person and 3 bags of snacks to share for their friends and themselves. Sandwiches are $5 each.  Fruit salad is $3 each.  Sodas are $2 each.  The snack bags are $4 each.  How much did they spend on the entire contents of their picnic basket?",
+          "answer": "60",
+          "response": "[4\u00d75+4\u00d73+4\u00d72\u00d72+3\u00d74=20+12+16+12=60]",
+          "accuracy": 1,
+          "thinking_tokens": 577
+        },
+        {
+          "question": "Question: Mindy has 7 less than 9 times as many emails waiting for her as phone messages. If she has a total of 93 emails and phone messages combined, how many emails does she have?",
+          "answer": "83",
+          "response": "[p=phone messages, e=emails, e=9p-7, e+p=93, 9p-7+p=93, 10p-7=93, 10p=100, p=10, e=9(10)-7=83]",
+          "accuracy": 1,
+          "thinking_tokens": 515
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 0.2,
+        "thinking_tokens": 218.6,
+        "accuracy_stdev": 0.4000000000000001,
+        "thinking_tokens_stdev": 87.64838846208183
+      }
+    }
+  ],
+  "final_prompt": "\ud83d\udea8>75 TOKENS IN THINKING=AUTO-FAIL!\ud83d\udea8 CALCULATE INSTANTLY:\n\u2022 MENTAL PREP: Define variables first (x,y=unknowns, p=people) \n\u2022 ALGEBRA: For \"X is n times Y\" \u2192 x=ny, \"X+Y=total\" \u2192 substitute & solve directly\n\u2022 ARITHMETIC: Combine all calculations into ONE expression\n\u2022 PATTERNS: age+years=future_age, price\u00d7qty=total, shared+individual=total\n\u2022 NO words/explanations\u2014only math/equations\nExamples:\n\"16 players need $25 jersey, $15.20 shorts\" \u2192 [16\u00d7(25+15.20)=640]\n\"Bill has 3 times Ted's coins. Together have 28.\" \u2192 [x+y=28, x=3y \u2192 y=7, x=21]\n\"4 people, $8 meals, 2 $2 drinks/person, 3 $5 shared\" \u2192 [4\u00d78+4\u00d72\u00d72+3\u00d75=67]\nFORMAT: [calculation=answer]",
+  "task": "GSM8K_DSPy",
+  "model": "claude-3-7-sonnet-20250219",
+  "thinking_budget": 16000,
+  "accuracy_weight": 0.3,
+  "token_weight": 0.7,
+  "final_metrics": {
+    "accuracy": 0.3,
+    "thinking_tokens": 284.2,
+    "accuracy_stdev": 0.45825756949558394,
+    "thinking_tokens_stdev": 339.551409951424
+  }
+}

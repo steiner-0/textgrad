@@ -14,13 +14,16 @@ class GSM8K(Dataset):
         self.subset = subset
         assert split in ["train", "val", "test"]
         if split == "test":
-            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="test[:300]")
+            # self.data = load_dataset("gsm8k", subset, cache_dir=root, split="test[:300]")
+            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="test[:50]")
         elif split == "val":
             # Split the training set into half. Let the second half be the training set.
             # Let the first 100 samples be the validation set.
-            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[:100]")
+            # self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[:100]")
+            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[50:100]")
         elif split == "train":
-            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[100:]")
+            # self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[100:]")
+            self.data = load_dataset("gsm8k", subset, cache_dir=root, split="train[100:300]")
         self.split = split
     
     def __getitem__(self, index):
