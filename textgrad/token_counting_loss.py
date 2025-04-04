@@ -1,5 +1,3 @@
-# token_counting_loss.py - place in textgrad/loss/
-
 import re
 from typing import Dict, Union, List
 import tiktoken

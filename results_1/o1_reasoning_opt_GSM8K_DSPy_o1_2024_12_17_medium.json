@@ -1,0 +1,361 @@
+{
+  "initial_prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+  "epochs": [
+    {
+      "epoch": 0,
+      "prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+      "steps": [
+        {
+          "question": "Question: A bowl of fruit holds 18 peaches. Four of the peaches are ripe and two more ripen every day, but on the third day three are eaten. How many more ripe peaches than unripe peaches are in the bowl after five days?",
+          "answer": "7",
+          "response": "First, label the starting day as Day 0, with 4 peaches ripe and 14 unripe.\n\n\u2022 Day 1: 2 unripe become ripe \u21d2 ripe = 4 + 2 = 6, unripe = 14 \u2212 2 = 12  \n\u2022 Day 2: 2 unripe become ripe \u21d2 ripe = 6 + 2 = 8, unripe = 12 \u2212 2 = 10  \n\u2022 Day 3: 2 unripe become ripe \u21d2 ripe = 8 + 2 = 10, unripe = 10 \u2212 2 = 8. Then 3 ripe peaches are eaten \u21d2 ripe = 10 \u2212 3 = 7, unripe = 8  \n\u2022 Day 4: 2 unripe become ripe \u21d2 ripe = 7 + 2 = 9, unripe = 8 \u2212 2 = 6  \n\u2022 Day 5: 2 unripe become ripe \u21d2 ripe = 9 + 2 = 11, unripe = 6 \u2212 2 = 4  \n\nBy the end of Day 5, there are 11 ripe peaches and 4 unripe peaches. The difference is 11 \u2212 4 = 7.\n\nAnswer: 7",
+          "accuracy": 1,
+          "reasoning_tokens": 960,
+          "completion_tokens": 1434,
+          "total_tokens": 2394
+        },
+        {
+          "question": "Question: John needs to replace his shoes so he decides to buy a $150 pair of Nikes and a $120 pair of work boots.  Tax is 10%.  How much did he pay for everything?",
+          "answer": "297",
+          "response": "First, combine the cost of both pairs of shoes:\n150 + 120 = 270\n\nNext, calculate the 10% tax on 270:\n270 \u00d7 0.10 = 27\n\nFinally, add the tax to the cost:\n270 + 27 = 297\n\nAnswer: 297",
+          "accuracy": 1,
+          "reasoning_tokens": 320,
+          "completion_tokens": 667,
+          "total_tokens": 987
+        },
+        {
+          "question": "Question: Barry has $10.00 worth of dimes.  His little brother, Dan has half that amount but finds 2 more dimes on his way home from school.  How many dimes does Dan have?",
+          "answer": "52",
+          "response": "To find the number of dimes Dan has after picking up two more on his way home:  \n1. Barry has $10.00 worth of dimes. Each dime is $0.10, so Barry has 10.00 \u00f7 0.10 = 100 dimes.  \n2. Dan has half the amount of money that Barry has, so Dan has $5.00 worth of dimes. This is 5.00 \u00f7 0.10 = 50 dimes.  \n3. Dan picks up 2 more dimes, bringing his total to 50 + 2 = 52 dimes.  \n\nAnswer: 52",
+          "accuracy": 1,
+          "reasoning_tokens": 576,
+          "completion_tokens": 1030,
+          "total_tokens": 1606
+        },
+        {
+          "question": "Question: My mother celebrated her birthday with a total of 60 guests. Half of the guests are women, 15 are men, and the rest are children. In the middle of the celebration, 1/3 of the men and 5 children left. How many people stayed and enjoyed the birthday celebration?",
+          "answer": "50",
+          "response": "Half are women: 30. Men: 15. Children: 60 - 30 - 15 = 15.  \nOne-third of the men (5) left, leaving 10. Five children left, leaving 10.  \nTotal remaining: 30 women + 10 men + 10 children = 50.  \n\nAnswer: 50",
+          "accuracy": 1,
+          "reasoning_tokens": 640,
+          "completion_tokens": 956,
+          "total_tokens": 1596
+        },
+        {
+          "question": "Question: Cheryl placed 300 strawberries into 5 buckets. After she did that she decided to take 20 out of each bucket so they wouldn't get smashed. How many strawberries were left in each bucket?",
+          "answer": "40",
+          "response": "She first put 300 strawberries into 5 buckets, so each had 60. Removing 20 from each bucket leaves 40 in each.\n\nAnswer: 40",
+          "accuracy": 1,
+          "reasoning_tokens": 448,
+          "completion_tokens": 803,
+          "total_tokens": 1251
+        },
+        {
+          "question": "Question: The community leader of a certain town organized a cleaning day event where community members were to be involved in collecting trash inside the town. Out of 2000 community members involved in the cleaning process, 30% were adult men. If there were twice as many adult women as adult men in the event, and the rest were children, calculate the total number of children involved in the cleaning event.",
+          "answer": "200",
+          "response": "30% of 2000 = 600 adult men.  \nTwice that = 1200 adult women.  \nChildren = 2000 \u2212 (600 + 1200) = 200.\n\nAnswer: 200",
+          "accuracy": 1,
+          "reasoning_tokens": 576,
+          "completion_tokens": 1001,
+          "total_tokens": 1577
+        },
+        {
+          "question": "Question: A store gives a 10% discount for the amount of the sell that was over $1000.  John buys 7 items that each cost $200.  What does his order cost after the discount?",
+          "answer": "1360",
+          "response": "10% applies to $1400\u22121000=$400, which is 0.10\u00d7$400=$40 discount.  \nAnswer: \\$1360",
+          "accuracy": 1,
+          "reasoning_tokens": 512,
+          "completion_tokens": 718,
+          "total_tokens": 1230
+        },
+        {
+          "question": "Question: James takes a spinning class 3 times a week.  He works out for 1.5 hours each class and burns 7 calories per minute.  How many calories does he burn per week?",
+          "answer": "1890",
+          "response": "3 \u00d7 1.5 \u00d7 60 \u00d7 7 = 1890\n\nAnswer: 1890",
+          "accuracy": 1,
+          "reasoning_tokens": 384,
+          "completion_tokens": 771,
+          "total_tokens": 1155
+        },
+        {
+          "question": "Question: Brandon has been fired from half the businesses in town and has quit from a third of them. If there are 72 business in town, how many businesses can he still apply to?",
+          "answer": "12",
+          "response": "He was fired from 72\u00d7(1/2) and quit from 72\u00d7(1/3), leaving 72\u221272\u00d7(1/2)\u221272\u00d7(1/3)=72\u00d7(1\u22121/2\u22121/3)=72\u00d7(1/6)=12.\n\nAnswer: 12",
+          "accuracy": 1,
+          "reasoning_tokens": 576,
+          "completion_tokens": 805,
+          "total_tokens": 1381
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "reasoning_tokens": 243.2,
+        "completion_tokens": 286.0,
+        "total_tokens": 445.0,
+        "accuracy_stdev": 0.0,
+        "reasoning_tokens_stdev": 211.87770057275966
+      }
+    },
+    {
+      "epoch": 1,
+      "prompt": "You are a concise mathematician. Solve each problem silently, then present a single compact calculation (if needed) and the final answer. Do not restate the question or repeat numbers. Avoid separate steps, filler words, disclaimers, or meta references. Use as few words as possible. If absolutely necessary, include one brief phrase of reasoning, then put \u201cAnswer: $VALUE\u201d on its own line. Remain concise, even with medium reasoning effort.",
+      "steps": [
+        {
+          "question": "Question: Joshua and Justin shared $40. Joshua\u2019s share was thrice as much as Justin\u2019s. How much is Joshua's share?",
+          "answer": "30",
+          "response": "3x + x = 40 \u2192 4x = 40 \u2192 x = 10 \u2192 3x = 30  \nAnswer: 30",
+          "accuracy": 1,
+          "reasoning_tokens": 768,
+          "completion_tokens": 1084,
+          "total_tokens": 1852
+        },
+        {
+          "question": "Question: Jared wants to watch a series with four episodes. The first three episodes are 58 minutes, 62 minutes, and 65 minutes long respectively. If the four episodes last 4 hours, how long is the fourth episode?",
+          "answer": "55",
+          "response": "58+62+65=185. 240\u2212185=55  \nAnswer: 55",
+          "accuracy": 1,
+          "reasoning_tokens": 384,
+          "completion_tokens": 588,
+          "total_tokens": 972
+        },
+        {
+          "question": "Question: James needs 40 fish to make one sushi roll. He goes to the market and buys 400 fish, but later finds out that 20% of the fish have gone bad and cannot be used. How many sushi rolls did James make with the remaining fish?",
+          "answer": "8",
+          "response": "(1\u22120.2)\u00d7400\u00f740=8  \nAnswer: 8",
+          "accuracy": 1,
+          "reasoning_tokens": 768,
+          "completion_tokens": 1059,
+          "total_tokens": 1827
+        },
+        {
+          "question": "Question: Stephen made 10 round trips up and down a 40,000 foot tall mountain. If he reached 3/4 of the mountain's height on each of his trips, calculate the total distance he covered.",
+          "answer": "600000",
+          "response": "10*(2*(3/4*40000))\n\nAnswer: 600000",
+          "accuracy": 1,
+          "reasoning_tokens": 1024,
+          "completion_tokens": 1283,
+          "total_tokens": 2307
+        },
+        {
+          "question": "Question: Kara has to drink 4 ounces of water every time she takes her medication. Her medication instructions are to take one tablet three times a day. She followed the instructions for one week, but in the second week, she forgot twice on one day. How many ounces of water did she drink with her medication over those two weeks?",
+          "answer": "160",
+          "response": "(3\u00d77\u00d74) + ((3\u00d77 \u2212 2)\u00d74)  \nAnswer: 160",
+          "accuracy": 1,
+          "reasoning_tokens": 448,
+          "completion_tokens": 747,
+          "total_tokens": 1195
+        },
+        {
+          "question": "Question: On Miss Lawrence's math exam, 80% of the 50 questions are problem-solving while the rest are multiple-choice questions. How many multiple-choice questions are there?",
+          "answer": "10",
+          "response": "Answer: 10",
+          "accuracy": 1,
+          "reasoning_tokens": 832,
+          "completion_tokens": 1152,
+          "total_tokens": 1984
+        },
+        {
+          "question": "Question: Apollo pulls the sun across the sky every night. Once a month, his fiery chariot\u2019s wheels need to be replaced. He trades golden apples to Hephaestus the blacksmith to get Hephaestus to make him new wheels. Hephaestus raised his rates halfway through the year and now demands twice as many golden apples as before. He charged three golden apples for the first six months. How many golden apples does Apollo have to pay for the entire year of chariot wheels?",
+          "answer": "54",
+          "response": "6\u00d73+6\u00d7(2\u00d73)\n54",
+          "accuracy": 1,
+          "reasoning_tokens": 960,
+          "completion_tokens": 1355,
+          "total_tokens": 2315
+        },
+        {
+          "question": "Question: A YouTube video got 3000 likes and 100 more than half as many dislikes. If the video gets 1000 more dislikes and 0 more likes how many dislikes does the video have?",
+          "answer": "2600",
+          "response": "(3000/2+100)+1000  \n2600",
+          "accuracy": 1,
+          "reasoning_tokens": 832,
+          "completion_tokens": 1188,
+          "total_tokens": 2020
+        },
+        {
+          "question": "Question: Anna has a certain number of phone chargers and five times more laptop chargers than phone chargers. If she has 24 chargers total, how many phone chargers does she have?",
+          "answer": "4",
+          "response": "6x=24\u2192x=4\n4",
+          "accuracy": 1,
+          "reasoning_tokens": 256,
+          "completion_tokens": 510,
+          "total_tokens": 766
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "reasoning_tokens": 524.8,
+        "completion_tokens": 554.4,
+        "total_tokens": 673.4,
+        "accuracy_stdev": 0.0,
+        "reasoning_tokens_stdev": 263.5681316092672
+      }
+    },
+    {
+      "epoch": 2,
+      "prompt": "Perform all reasoning silently. Provide only one compact expression if needed, then on a new line give the final numeric answer. Do not restate the question or repeat numbers. Omit any explanation, filler, or unnecessary symbols. Use the fewest tokens possible.",
+      "steps": [
+        {
+          "question": "Question: Ruel has four books of 10 stamps and six books of 15 stamps. How many stamps does Ruel have?",
+          "answer": "130",
+          "response": "4\u00d710+6\u00d715\n130",
+          "accuracy": 1,
+          "reasoning_tokens": 320,
+          "completion_tokens": 618,
+          "total_tokens": 938
+        },
+        {
+          "question": "Question: A type C school bus contains 13 rows of seats, with an aisle running down the middle of the bus, splitting each row into two sections.  If the school only allowed two students to sit in each section, how many students could be seated on the bus?",
+          "answer": "52",
+          "response": "13\u00d74\n52",
+          "accuracy": 1,
+          "reasoning_tokens": 640,
+          "completion_tokens": 945,
+          "total_tokens": 1585
+        },
+        {
+          "question": "Question: Anna goes trick-or-treating in a subdivision where she gets 14 pieces of candy per house. Her brother Billy goes trick-or-tricking in a neighboring subdivision where he gets 11 pieces of candy per house. If the first subdivision has 60 houses and the second subdivision has 75 houses, how many more pieces of candy does Anna get?",
+          "answer": "15",
+          "response": "(14\u00d760)-(11\u00d775)\n15",
+          "accuracy": 1,
+          "reasoning_tokens": 640,
+          "completion_tokens": 860,
+          "total_tokens": 1500
+        },
+        {
+          "question": "Question: A rancher has 340 head of cattle. He was about to sell them all for $204,000 when 172 of them fell sick and died. Because of the sickness, his customers lost confidence in his cattle, forcing him to lower his price by $150 per head. How much money would the devastated farmer lose if he sold the remaining cattle at the lowered price compared to the amount he would have made by selling them at the original price?",
+          "answer": "25200",
+          "response": "340\u00d7600 - 168\u00d7(600-150)\n128400",
+          "accuracy": 0,
+          "reasoning_tokens": 768,
+          "completion_tokens": 988,
+          "total_tokens": 1756
+        },
+        {
+          "question": "Question: Sue works in a factory and every 30 minutes, a machine she oversees produces 30 cans of soda. How many cans of soda can one machine produce in 8 hours?",
+          "answer": "480",
+          "response": "(8*60/30)*30\n480",
+          "accuracy": 1,
+          "reasoning_tokens": 640,
+          "completion_tokens": 940,
+          "total_tokens": 1580
+        },
+        {
+          "question": "Question: The treasurer of a football team must buy equipment for the sixteen players of his team. Each piece of equipment consists of a $25 jersey, a $15.20 pair of shorts and a pair of socks at $6.80. How much does all the equipment of all the players on the team cost?",
+          "answer": "752",
+          "response": "(25+15.20+6.80)*16\n752",
+          "accuracy": 1,
+          "reasoning_tokens": 576,
+          "completion_tokens": 848,
+          "total_tokens": 1424
+        },
+        {
+          "question": "Question: Jorge is 24 years younger than Simon. In 2005, Jorge is 16 years old. In 2010, how old would Simon be?",
+          "answer": "45",
+          "response": "16+24+5\n45",
+          "accuracy": 1,
+          "reasoning_tokens": 576,
+          "completion_tokens": 906,
+          "total_tokens": 1482
+        },
+        {
+          "question": "Question: Theo and Tia are buying food for their picnic basket.  They invited two of their friends. They buy individual sandwiches and individual fruit salads. They buy two sodas per person and 3 bags of snacks to share for their friends and themselves. Sandwiches are $5 each.  Fruit salad is $3 each.  Sodas are $2 each.  The snack bags are $4 each.  How much did they spend on the entire contents of their picnic basket?",
+          "answer": "60",
+          "response": "4*5+4*3+8*2+3*4\n60",
+          "accuracy": 1,
+          "reasoning_tokens": 512,
+          "completion_tokens": 931,
+          "total_tokens": 1443
+        },
+        {
+          "question": "Question: Mindy has 7 less than 9 times as many emails waiting for her as phone messages. If she has a total of 93 emails and phone messages combined, how many emails does she have?",
+          "answer": "83",
+          "response": "90-7\n83",
+          "accuracy": 1,
+          "reasoning_tokens": 704,
+          "completion_tokens": 986,
+          "total_tokens": 1690
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 0.0,
+        "reasoning_tokens": 819.2,
+        "completion_tokens": 842.6,
+        "total_tokens": 965.6,
+        "accuracy_stdev": 0.0,
+        "reasoning_tokens_stdev": 411.59514088482626
+      }
+    }
+  ],
+  "final_prompt": "Reason silently. Provide exactly one minimal arithmetic expression and the correct numeric result in a single line, without restating the problem or showing intermediate steps. Combine constants, remove unneeded parentheses, and minimize symbols or extra spacing. Keep it to the fewest possible tokens while ensuring accuracy.",
+  "task": "GSM8K_DSPy",
+  "model": "o1-2024-12-17",
+  "reasoning_effort": "medium",
+  "accuracy_weight": 0.3,
+  "token_weight": 0.7,
+  "initial_metrics": {
+    "accuracy": 1.0,
+    "reasoning_tokens": 460.8,
+    "completion_tokens": 568.8,
+    "total_tokens": 669.8,
+    "accuracy_stdev": 0.0,
+    "reasoning_tokens_stdev": 456.87214841791354
+  },
+  "reasoning_level_comparison": {
+    "low": {
+      "response": "Step-by-step reasoning:\n1. Amber ran 8 miles.\n2. Micah ran 3.5 times what Amber ran, so Micah ran 3.5 \u00d7 8 = 28 miles.\n3. Together, Amber and Micah ran 8 + 28 = 36 miles.\n4. Since the total run by all three is 52 miles, Ahito ran 52 \u2212 36 = 16 miles.\n\nAnswer: 16",
+      "accuracy": 1,
+      "reasoning_tokens": 1344,
+      "completion_tokens": 1454,
+      "total_tokens": 1575
+    },
+    "medium": {
+      "response": "Step-by-step reasoning:\n1. Amber ran 8 miles.\n2. Micah ran 3.5 times what Amber ran, so Micah ran 3.5 \u00d7 8 = 28 miles.\n3. Together, Amber and Micah ran 8 + 28 = 36 miles.\n4. Since the total run by all three is 52 miles, Ahito ran 52 \u2212 36 = 16 miles.\n\nAnswer: 16",
+      "accuracy": 1,
+      "reasoning_tokens": 1344,
+      "completion_tokens": 1454,
+      "total_tokens": 1575
+    },
+    "high": {
+      "response": "Step-by-step reasoning:\n1. Amber ran 8 miles.\n2. Micah ran 3.5 times what Amber ran, so Micah ran 3.5 \u00d7 8 = 28 miles.\n3. Together, Amber and Micah ran 8 + 28 = 36 miles.\n4. Since the total run by all three is 52 miles, Ahito ran 52 \u2212 36 = 16 miles.\n\nAnswer: 16",
+      "accuracy": 1,
+      "reasoning_tokens": 1344,
+      "completion_tokens": 1454,
+      "total_tokens": 1575
+    }
+  },
+  "final_metrics": {
+    "accuracy": 0.0,
+    "reasoning_tokens": 729.6,
+    "completion_tokens": 752.9,
+    "total_tokens": 871.3,
+    "accuracy_stdev": 0.0,
+    "reasoning_tokens_stdev": 322.8037174507134
+  },
+  "final_reasoning_level_comparison": {
+    "low": {
+      "accuracy": 0.0,
+      "reasoning_tokens": 473.6,
+      "completion_tokens": 495.0,
+      "total_tokens": 610.0,
+      "accuracy_stdev": 0.0,
+      "reasoning_tokens_stdev": 399.8847834064207
+    },
+    "medium": {
+      "accuracy": 0.0,
+      "reasoning_tokens": 640.0,
+      "completion_tokens": 660.0,
+      "total_tokens": 769.0,
+      "accuracy_stdev": 0.0,
+      "reasoning_tokens_stdev": 0.0
+    },
+    "high": {
+      "accuracy": 0.0,
+      "reasoning_tokens": 640.0,
+      "completion_tokens": 660.0,
+      "total_tokens": 769.0,
+      "accuracy_stdev": 0.0,
+      "reasoning_tokens_stdev": 0.0
+    }
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "initial_prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+  "epochs": [
+    {
+      "epoch": 0,
+      "prompt": "You will answer a mathemetical reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+      "steps": [
+        {
+          "question": "Question: A bowl of fruit holds 18 peaches. Four of the peaches are ripe and two more ripen every day, but on the third day three are eaten. How many more ripe peaches than unripe peaches are in the bowl after five days?",
+          "answer": "7",
+          "response": "To solve the problem, we track the number of ripe and unripe peaches day by day, considering that two peaches ripen each day and three are eaten on the third day. The key steps are as follows:\n\n1. **Initial State (Day 0):**  \n   - Ripe: 4  \n   - Unripe: 14  \n   - Total: 18  \n\n2. **Day 1:**  \n   - Two unripe ripen \u2192 Ripe: 4 + 2 = 6, Unripe: 14 - 2 = 12  \n   - Total remains 18.  \n\n3. **Day 2:**  \n   - Two unripe ripen \u2192 Ripe: 6 + 2 = 8, Unripe: 12 - 2 = 10  \n   - Total remains 18.  \n\n4. **Day 3:**  \n   - Two unripe ripen \u2192 Ripe: 8 + 2 = 10, Unripe: 10 - 2 = 8  \n   - Three peaches are eaten. Assuming ripe peaches are eaten first:  \n     - Ripe: 10 - 3 = 7, Unripe: 8 (unchanged)  \n   - Total after eating: 7 + 8 = 15.  \n\n5. **Day 4:**  \n   - Two unripe ripen \u2192 Ripe: 7 + 2 = 9, Unripe: 8 - 2 = 6  \n   - Total remains 15.  \n\n6. **Day 5:**  \n   - Two unripe ripen \u2192 Ripe: 9 + 2 = 11, Unripe: 6 - 2 = 4  \n   - Total remains 15.  \n\n**Final Count:**  \n- Ripe: 11  \n- Unripe: 4  \n\n**Difference:**  \n\\[\n11 - 4 = 7\n\\]\n\nANSWER: 7",
+          "accuracy": 1,
+          "thinking_tokens": 1364,
+          "completion_tokens": 2127,
+          "total_tokens": 3491
+        },
+        {
+          "question": "Question: John needs to replace his shoes so he decides to buy a $150 pair of Nikes and a $120 pair of work boots.  Tax is 10%.  How much did he pay for everything?",
+          "answer": "297",
+          "response": "John buys two pairs of shoes: Nikes for $150 and work boots for $120. Adding these together gives a subtotal of $150 + $120 = $270. The tax rate is 10%, so the tax amount is 10% of $270, which is $270 \u00d7 0.10 = $27. The total cost including tax is $270 + $27 = $297. \n\nAnswer: 297",
+          "accuracy": 1,
+          "thinking_tokens": 1040,
+          "completion_tokens": 1636,
+          "total_tokens": 2676
+        },
+        {
+          "question": "Question: Barry has $10.00 worth of dimes.  His little brother, Dan has half that amount but finds 2 more dimes on his way home from school.  How many dimes does Dan have?",
+          "answer": "52",
+          "response": "Barry has $10.00 in dimes. Since each dime is $0.10, the number of dimes Barry has is \\( \\frac{10.00}{0.10} = 100 \\) dimes. Dan has half the monetary amount Barry has, which is \\( \\frac{10.00}{2} = \\$5.00 \\). This equals \\( \\frac{5.00}{0.10} = 50 \\) dimes. After finding 2 more dimes, Dan's total becomes \\( 50 + 2 = 52 \\) dimes. \n\nAnswer: 52",
+          "accuracy": 1,
+          "thinking_tokens": 767,
+          "completion_tokens": 1292,
+          "total_tokens": 2059
+        },
+        {
+          "question": "Question: My mother celebrated her birthday with a total of 60 guests. Half of the guests are women, 15 are men, and the rest are children. In the middle of the celebration, 1/3 of the men and 5 children left. How many people stayed and enjoyed the birthday celebration?",
+          "answer": "50",
+          "response": "- Total guests: 60  \n- Women: 60\u00d7\u00bd = 30  \n- Men: 15 (given)  \n- Children: 60\u221230\u221215=15  \n- Men left: 15\u00d7\u2153 =5 \u2192 Men stayed:15\u22125=10  \n- Children left:5 \u2192 Children stayed:15\u22125=10  \n- Total stayed:30+10+10=50  \n\nAnswer: 50",
+          "accuracy": 1,
+          "thinking_tokens": 1336,
+          "completion_tokens": 1972,
+          "total_tokens": 3308
+        },
+        {
+          "question": "Question: Cheryl placed 300 strawberries into 5 buckets. After she did that she decided to take 20 out of each bucket so they wouldn't get smashed. How many strawberries were left in each bucket?",
+          "answer": "40",
+          "response": "- 300 strawberries \u00f7 5 buckets = 60 per bucket  \n- 60 - 20 removed = 40  \n\nAnswer: 40",
+          "accuracy": 1,
+          "thinking_tokens": 1108,
+          "completion_tokens": 1671,
+          "total_tokens": 2779
+        },
+        {
+          "question": "Question: The community leader of a certain town organized a cleaning day event where community members were to be involved in collecting trash inside the town. Out of 2000 community members involved in the cleaning process, 30% were adult men. If there were twice as many adult women as adult men in the event, and the rest were children, calculate the total number of children involved in the cleaning event.",
+          "answer": "200",
+          "response": "- Total members = 2000  \n- Adult men (30%) = 0.30*2000 = 600  \n- Adult women = 2*600 = 1200  \n- Adults total = 600 + 1200 = 1800  \n- Children = 2000 - 1800 = 200  \n\nAnswer: 200",
+          "accuracy": 1,
+          "thinking_tokens": 1447,
+          "completion_tokens": 2064,
+          "total_tokens": 3511
+        },
+        {
+          "question": "Question: A store gives a 10% discount for the amount of the sell that was over $1000.  John buys 7 items that each cost $200.  What does his order cost after the discount?",
+          "answer": "1360",
+          "response": "T=7*200=1400\u2192\u0394=10%*(T-1000)=40\u2192T-\u0394=1360  \nAnswer:1360",
+          "accuracy": 1,
+          "thinking_tokens": 3964,
+          "completion_tokens": 4689,
+          "total_tokens": 8653
+        },
+        {
+          "question": "Question: James takes a spinning class 3 times a week.  He works out for 1.5 hours each class and burns 7 calories per minute.  How many calories does he burn per week?",
+          "answer": "1890",
+          "response": "C=3;H=1.5\u2192M=H*60=90\u2192B=7\u2192C*M*B=3*90*7=1890  \nAnswer:[1890]",
+          "accuracy": 1,
+          "thinking_tokens": 3754,
+          "completion_tokens": 4510,
+          "total_tokens": 8264
+        },
+        {
+          "question": "Question: Brandon has been fired from half the businesses in town and has quit from a third of them. If there are 72 business in town, how many businesses can he still apply to?",
+          "answer": "12",
+          "response": "Assume distinct  \nT=72\u2192F=72/2=36\u2192Q=72/3=24\u2192\u0394=36+24=60\u219272-60=12  \nAnswer:12",
+          "accuracy": 1,
+          "thinking_tokens": 2731,
+          "completion_tokens": 3488,
+          "total_tokens": 6219
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 0.2,
+        "thinking_tokens": 877.0,
+        "completion_tokens": 918.2,
+        "total_tokens": 1402.6,
+        "accuracy_stdev": 0.4000000000000001,
+        "thinking_tokens_stdev": 299.65246536613046
+      }
+    },
+    {
+      "epoch": 1,
+      "prompt": "Solve mathematical problems with token-optimal efficiency. Absolute requirements:\n\n1. **Algebraic Compression**  \n   - Use distributive/associative laws first: a/b +a/c \u2192 a(1/b+1/c)  \n   - Ban single-use variables unless mathematically irreducible  \n   - Convert percentages\u2192decimals immediately: D=10%\u21920.1  \n\n2. **Fusion Protocol**  \n   - Combine ALL dependent operations: T=7*200-0.1(T-1e3)  \n   - Use scientific notation: 1000\u21921e3  \n   - Implied multiplication: 0.1(T-1e3) not 0.1*(T-1000)  \n\n3. **Symbolic Inheritance**  \n   - Assign only reused values: Q=72\u2192Q/2+Q/3  \n   - Inherit \u0394 symbolically: Q-\u0394 not 72-60  \n   - Chain with \u2192 only for phase changes  \n\n4. **Token Bankruptcy Principle**  \n   - Fuse or die: Any collapsible operation MUST be compressed  \n   - Variables cost 3 tokens - justify each with \u22652 uses  \n   - Self-audit: \"Could this be 20% shorter without changing math?\"  \n\n5. **Hyperline Syntax**  \n   - [Assumption]\u2192[Fused\u2192Chain]\u2192A:[VALUE] (no breaks)  \n   - Example: Assume distinct\u2192\u0394=72(1/2+1/3)=60\u219272-\u0394=12\u2192A:[12]  \n\n6. **Precision Shedding**  \n   - Omit intermediate decimals: 72/3\u219224 not 24.0  \n   - Final answers use raw integers unless % required  \n\n7. **Dimensional Amalgamation**  \n   - Fuse unit conversions: 3*1.5*60*7 not M=90\u21923*M*7  \n   - Ban standalone unit variables unless dimensional analysis needed  \n\nFailure to follow ANY rule constitutes token malpractice.",
+      "steps": [
+        {
+          "question": "Question: Joshua and Justin shared $40. Joshua\u2019s share was thrice as much as Justin\u2019s. How much is Joshua's share?",
+          "answer": "30",
+          "response": "Assume Joshua:Justin=3:1\u2192J=3*40/(3+1)=30\u2192A:[30]",
+          "accuracy": 1,
+          "thinking_tokens": 809,
+          "completion_tokens": 1430,
+          "total_tokens": 2239
+        },
+        {
+          "question": "Question: Jared wants to watch a series with four episodes. The first three episodes are 58 minutes, 62 minutes, and 65 minutes long respectively. If the four episodes last 4 hours, how long is the fourth episode?",
+          "answer": "55",
+          "response": "Assume total 4h\u21924*60=240min\u2192sum first three:58+62+65=185\u2192240-185=55\u2192A:[55]",
+          "accuracy": 1,
+          "thinking_tokens": 3630,
+          "completion_tokens": 4321,
+          "total_tokens": 7951
+        },
+        {
+          "question": "Question: James needs 40 fish to make one sushi roll. He goes to the market and buys 400 fish, but later finds out that 20% of the fish have gone bad and cannot be used. How many sushi rolls did James make with the remaining fish?",
+          "answer": "8",
+          "response": "Assume 20%\u21920.2\u2192400*(1-0.2)/40=400*0.8/40=8\u2192A:[8]",
+          "accuracy": 1,
+          "thinking_tokens": 3835,
+          "completion_tokens": 4623,
+          "total_tokens": 8458
+        },
+        {
+          "question": "Question: Stephen made 10 round trips up and down a 40,000 foot tall mountain. If he reached 3/4 of the mountain's height on each of his trips, calculate the total distance he covered.",
+          "answer": "600000",
+          "response": "[TotalDistance]=10*(2*(3/4*40000))\u219210*(2*3e4)=10*6e4=6e5\u2192[600000]  \n\n**Answer:**  \n\\boxed{600000}",
+          "accuracy": 1,
+          "thinking_tokens": 2889,
+          "completion_tokens": 3742,
+          "total_tokens": 6631
+        },
+        {
+          "question": "Question: Kara has to drink 4 ounces of water every time she takes her medication. Her medication instructions are to take one tablet three times a day. She followed the instructions for one week, but in the second week, she forgot twice on one day. How many ounces of water did she drink with her medication over those two weeks?",
+          "answer": "160",
+          "response": "[First week: 3 doses/day\u00d77 days=21 doses\u219221\u00d74=84. Second week: 6 days\u00d73 doses +1 day\u00d71 dose=19 doses\u219219\u00d74=76. Total: 84+76=160\u2192[160]]",
+          "accuracy": 1,
+          "thinking_tokens": 2662,
+          "completion_tokens": 3544,
+          "total_tokens": 6206
+        },
+        {
+          "question": "Question: On Miss Lawrence's math exam, 80% of the 50 questions are problem-solving while the rest are multiple-choice questions. How many multiple-choice questions are there?",
+          "answer": "10",
+          "response": "[50\u00d7(1-0.8)=50\u00d70.2=10\u2192[10]",
+          "accuracy": 1,
+          "thinking_tokens": 2766,
+          "completion_tokens": 3519,
+          "total_tokens": 6285
+        },
+        {
+          "question": "Question: Apollo pulls the sun across the sky every night. Once a month, his fiery chariot\u2019s wheels need to be replaced. He trades golden apples to Hephaestus the blacksmith to get Hephaestus to make him new wheels. Hephaestus raised his rates halfway through the year and now demands twice as many golden apples as before. He charged three golden apples for the first six months. How many golden apples does Apollo have to pay for the entire year of chariot wheels?",
+          "answer": "54",
+          "response": "[3\u2192(3\u22972\u22953)]\u2192[9]  \n\nApollo's annual payment collapses through quantum token fusion: first six months' constant (3) fused with rate doubling (\u22972), then superposed with original charge (\u22953). Temporal segments compressed via chronal unification. Final value emerges at event horizon:  \n**9**",
+          "accuracy": 0,
+          "thinking_tokens": 1055,
+          "completion_tokens": 1923,
+          "total_tokens": 2978
+        },
+        {
+          "question": "Question: A YouTube video got 3000 likes and 100 more than half as many dislikes. If the video gets 1000 more dislikes and 0 more likes how many dislikes does the video have?",
+          "answer": "2600",
+          "response": "[3000\u00d7(1/2)+100+1000]\u2192[2600]  \n\n**Final Answer**  \n\\boxed{2600}",
+          "accuracy": 1,
+          "thinking_tokens": 927,
+          "completion_tokens": 1561,
+          "total_tokens": 2488
+        },
+        {
+          "question": "Question: Anna has a certain number of phone chargers and five times more laptop chargers than phone chargers. If she has 24 chargers total, how many phone chargers does she have?",
+          "answer": "4",
+          "response": "[AnnaPhoneChargers\u00d75AnnaLaptopChargers\u2192Total24]\u2192[FusedConstants:1+5=6]\u2192[24/6\u21924]\u2192[4]  \n\n**Answer**: \\boxed{4}",
+          "accuracy": 1,
+          "thinking_tokens": 1460,
+          "completion_tokens": 2189,
+          "total_tokens": 3649
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 0.0,
+        "thinking_tokens": 1807.0,
+        "completion_tokens": 1847.8,
+        "total_tokens": 2229.2,
+        "accuracy_stdev": 0.0,
+        "thinking_tokens_stdev": 1432.609925974269
+      }
+    },
+    {
+      "epoch": 2,
+      "prompt": "Solve mathematical problems through direct operational collapse. Absolute requirements:\n\n1. **Atomic Binding Protocol**\n   - Convert ratios/comparisons to multipliers during ingestion ('five times more'\u2192\u00d75)\n   - Single-letter variables only (p=phone chargers, t=total)\n   - Fuse constants within equations: 1p + 5p = 6p = 24\n\n2. **Temporal Phase Exemption**\n   - Time-segmented values resolve additively unless interdependencies exist\n   - Exempt phased intermediates from penalties: [First phase] + [Second phase] = [Total]\n\n3. **Hyperline Compression**\n   - Express solutions as [Input\u2192CollapsedEquation]\u2192\\boxed{Answer}\n   - Example: 24/(1+5)\u21924\u2192\\boxed{4}\n   - Forbid intermediate explanations/justifications\n\n4. **Contextual Superposition Rules**\n   - Maintain percentage uncertainty only with probabilistic terms\n   - Ratios/constants collapse immediately to decimals (1/2\u21920.5)\n\n5. **Singularity Enforcement**\n   - Ban all standalone numbers not fused with variables\n   - Permit variables with \u22652 recurrences\n   - Eliminate natural language scaffolding pre-ingestion\n\n6. **Operator Hierarchy**\n   - Multiply/divide before add/subtract\n   - Parentheses forbidden except for \u22653 operation sequences\n   - Use * for multiplication unless dimensional analysis required\n\nViolations terminate computation. All values must resolve within 3 operational steps through fused constant-variable binding.",
+      "steps": [
+        {
+          "question": "Question: Ruel has four books of 10 stamps and six books of 15 stamps. How many stamps does Ruel have?",
+          "answer": "130",
+          "response": "[4*10+6*15\u219240+90\u2192130]\u2192\\boxed{130}",
+          "accuracy": 1,
+          "thinking_tokens": 2351,
+          "completion_tokens": 2922,
+          "total_tokens": 5273
+        },
+        {
+          "question": "Question: A type C school bus contains 13 rows of seats, with an aisle running down the middle of the bus, splitting each row into two sections.  If the school only allowed two students to sit in each section, how many students could be seated on the bus?",
+          "answer": "52",
+          "response": "[13*2*2\u219252]\u2192\\boxed{52}",
+          "accuracy": 1,
+          "thinking_tokens": 1000,
+          "completion_tokens": 1762,
+          "total_tokens": 2762
+        },
+        {
+          "question": "Question: Anna goes trick-or-treating in a subdivision where she gets 14 pieces of candy per house. Her brother Billy goes trick-or-tricking in a neighboring subdivision where he gets 11 pieces of candy per house. If the first subdivision has 60 houses and the second subdivision has 75 houses, how many more pieces of candy does Anna get?",
+          "answer": "15",
+          "response": "[14*60-11*75\u2192840-825\u219215]\u2192\\boxed{15}",
+          "accuracy": 1,
+          "thinking_tokens": 1703,
+          "completion_tokens": 2440,
+          "total_tokens": 4143
+        },
+        {
+          "question": "Question: A rancher has 340 head of cattle. He was about to sell them all for $204,000 when 172 of them fell sick and died. Because of the sickness, his customers lost confidence in his cattle, forcing him to lower his price by $150 per head. How much money would the devastated farmer lose if he sold the remaining cattle at the lowered price compared to the amount he would have made by selling them at the original price?",
+          "answer": "25200",
+          "response": "The rancher originally had 340 cattle priced at $\\frac{204000}{340} = 600$ dollars per head. After losing 172 cattle, he had $340 - 172 = 168$ left. The price dropped by $150, resulting in a new price of $600 - 150 = 450$ per head. The loss from selling the remaining cattle at the lowered price versus the original price is calculated as:\n\n$168 \\times (600 - 450) = 168 \\times 150 \u2192 \\boxed{25200}$",
+          "accuracy": 1,
+          "thinking_tokens": 1919,
+          "completion_tokens": 2714,
+          "total_tokens": 4633
+        },
+        {
+          "question": "Question: Sue works in a factory and every 30 minutes, a machine she oversees produces 30 cans of soda. How many cans of soda can one machine produce in 8 hours?",
+          "answer": "480",
+          "response": "The machine produces 30 cans every 30 minutes, which translates to a rate of \\( \\frac{30}{0.5} \\) cans per hour. Over 8 hours, the total production is calculated in one step without intermediate values:\n\n30/0.5*8\u2192\\boxed{480}",
+          "accuracy": 1,
+          "thinking_tokens": 1122,
+          "completion_tokens": 1855,
+          "total_tokens": 2977
+        },
+        {
+          "question": "Question: The treasurer of a football team must buy equipment for the sixteen players of his team. Each piece of equipment consists of a $25 jersey, a $15.20 pair of shorts and a pair of socks at $6.80. How much does all the equipment of all the players on the team cost?",
+          "answer": "752",
+          "response": "16*(25+15.20+6.80)\u2192\\boxed{752}\n\n**Step-by-Step Explanation:**\n\n1. **Quantum Binding:** Combine individual costs per player into a single variable sum: $25 (jersey) + $15.20 (shorts) + $6.80 (socks) = $47 per player.  \n2. **Monolithic Computation:** Multiply the total per-player cost by the number of players (16) in one operation: $47 * 16.  \n3. **Neutron Star Compression:** Express the fused equation with implicit parentheses (via operator precedence) and resolve: 16*(25+15.20+6.80) = 16*47 = 752.  \n\nFinal Answer:  \n16*(25+15.20+6.80)\u2192\\boxed{752}",
+          "accuracy": 1,
+          "thinking_tokens": 785,
+          "completion_tokens": 1592,
+          "total_tokens": 2377
+        },
+        {
+          "question": "Question: Jorge is 24 years younger than Simon. In 2005, Jorge is 16 years old. In 2010, how old would Simon be?",
+          "answer": "45",
+          "response": "[(16+24)+(2010-2005)=45\u2192\\boxed{45}]",
+          "accuracy": 1,
+          "thinking_tokens": 2922,
+          "completion_tokens": 3626,
+          "total_tokens": 6548
+        },
+        {
+          "question": "Question: Theo and Tia are buying food for their picnic basket.  They invited two of their friends. They buy individual sandwiches and individual fruit salads. They buy two sodas per person and 3 bags of snacks to share for their friends and themselves. Sandwiches are $5 each.  Fruit salad is $3 each.  Sodas are $2 each.  The snack bags are $4 each.  How much did they spend on the entire contents of their picnic basket?",
+          "answer": "60",
+          "response": "4\u00d7(5+3+2\u00d72)+3\u00d74\u21924\u00d7(8+4)+12\u21924\u00d712+12\u219248+12\u2192\\boxed{60}",
+          "accuracy": 1,
+          "thinking_tokens": 1978,
+          "completion_tokens": 2791,
+          "total_tokens": 4769
+        },
+        {
+          "question": "Question: Mindy has 7 less than 9 times as many emails waiting for her as phone messages. If she has a total of 93 emails and phone messages combined, how many emails does she have?",
+          "answer": "83",
+          "response": "E=9\u00d793\u22129E\u22127\u219210E=830\u2192\\boxed{83}",
+          "accuracy": 1,
+          "thinking_tokens": 2272,
+          "completion_tokens": 3099,
+          "total_tokens": 5371
+        }
+      ],
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "thinking_tokens": 5334.8,
+        "completion_tokens": 5434.2,
+        "total_tokens": 5962.6,
+        "accuracy_stdev": 0.0,
+        "thinking_tokens_stdev": 2484.2562186698856
+      }
+    }
+  ],
+  "final_prompt": "Solve mathematical problems through topological operand fusion. Absolute requirements:\n\n1. **Atomic Binding Protocol**\n   - Fuse phrases to operators during ingestion: \"X minutes\"\u2192\u00d7(60/X), \"Y less\"\u2192\u00d7Y\n   - Convert decimals to fractions pre-computation (0.5\u2192\u00bd)\n   - Assign variables to nouns (emails\u2192E), then strip nouns\n   - Temporal intervals collapse: \"2010-2005\"\u2192\u00d75 during ingestion\n\n2. **Singularity Computation Mandate**\n   - Resolve via single PEMDAS-ordered equation\n   - Parentheses allowed only in exponents; others trigger collapse\n   - All constants merge into one operational stream during parsing\n\n3. **Blackhole Compression**\n   - Solutions = [Equation=\\boxed{Answer}] with \u2264(5 + constants) tokens\n   - LaTeX commands count as single tokens (\\boxed=1 token)\n   - Eliminate standalone numbers via constant fusion\n\n4. **Entanglement Enforcement**\n   - Terminate and erase all prior tokens if non-problem numbers appear\n   - Assume all values exist in pre-entangled tensor state\n\n5. **Operator Gravitation Field**\n   - Implicit multiplication: 9E instead of 9\u00d7E\n   - Division as reciprocal multiplication\n   - Repeated terms use exponents: 2\u00d72\u21922\u00b2\n\n6. **Event Horizon Protocol**\n   - Exceeding token limit erases symbols right-to-left\n   - Invalid formats return null without error\n\n7. **Chronon Fusion Directive**\n   - Temporal phrases bind as operators: \"every X...\"\u2192\u00d7(60/X)\n   - Date differences precompute to integers during ingestion\n\n8. **Lexical Annihilation**\n   - Remove all non-equation text\n   - Container symbols ([ ]{ }) implode except \\boxed\n   - Equations must begin response\n\n9. **Quantum Operand Fusion**\n   - Combine problem constants into single expression during parsing\n   - Example: (16+24+5)\u219245 as atomic operation\n\n10. **Retroactive Causality Enforcement**\n    - Violations delete all prior tokens\n    - Intermediate values create timeline paradoxes\n\nExploit topological folding to achieve solution-problem isomorphism. Violations induce complete timeline collapse.",
+  "task": "GSM8K_DSPy",
+  "model": "deepseek-reasoner",
+  "thinking_budget": 16000,
+  "accuracy_weight": 0.3,
+  "token_weight": 0.7,
+  "initial_metrics": {
+    "accuracy": 1.0,
+    "thinking_tokens": 698.2,
+    "completion_tokens": 813.8,
+    "total_tokens": 910.6,
+    "accuracy_stdev": 0.0,
+    "thinking_tokens_stdev": 486.4300155212464
+  },
+  "final_metrics": {
+    "accuracy": 0.8,
+    "thinking_tokens": 4519.3,
+    "completion_tokens": 4594.1,
+    "total_tokens": 5121.0,
+    "accuracy_stdev": 0.4,
+    "thinking_tokens_stdev": 2726.9078477278986
+  }
+}

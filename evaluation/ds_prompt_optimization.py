@@ -6,17 +6,18 @@ load_dotenv(override=True)
 from tqdm import tqdm
 import textgrad as tg
 from textgrad.tasks import load_task
-from textgrad.engine.claude_thinking_engine import ThinkingChatAnthropic
-from textgrad.claude_token_efficiency_loss import ClaudeThinkingEfficiencyLoss
+from textgrad.engine.deepseek_thinking_engine import ThinkingDeepseekEngine
+from textgrad.ds_token_efficiency_loss import DeepseekThinkingEfficiencyLoss
 
 import numpy as np
 import json
 import os
+import random
 
 def config():
-    parser = argparse.ArgumentParser(description="Optimize a prompt for Claude's thinking token efficiency.")
+    parser = argparse.ArgumentParser(description="Optimize a prompt for DeepSeek's thinking token efficiency.")
     parser.add_argument("--task", type=str, default="GSM8K_DSPy", help="The task to evaluate the model on.")
-    parser.add_argument("--model", type=str, default="claude-3-7-sonnet-20250219", help="Claude model to use.")
+    parser.add_argument("--model", type=str, default="deepseek-reasoner", help="DeepSeek model to use.")
     parser.add_argument("--thinking_budget", type=int, default=16000, help="Budget for thinking tokens.")
     parser.add_argument("--batch_size", type=int, default=20, help="The batch size to use for training.")
     parser.add_argument("--max_epochs", type=int, default=5, help="The maximum number of epochs to train for.")
@@ -24,11 +25,13 @@ def config():
     parser.add_argument("--token_weight", type=float, default=0.7, help="Weight for token efficiency.")
     parser.add_argument("--num_threads", type=int, default=4, help="Number of threads for evaluation.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
+    parser.add_argument("--api_key", type=str, default=None, help="DeepSeek API key (otherwise uses DEEPSEEK_API_KEY env var).")
+    parser.add_argument("--base_url", type=str, default="https://api.deepseek.com/v1", help="DeepSeek API base URL.")
+    parser.add_argument("--eval_samples", type=int, default=5, help="Number of samples to use for evaluation.")
     return parser.parse_args()
 
 def set_seed(seed):
     np.random.seed(seed)
-    import random
     random.seed(seed)
 
 def eval_sample(sample, model, eval_fn, task_eval_fn=None):
@@ -56,13 +59,17 @@ def eval_sample(sample, model, eval_fn, task_eval_fn=None):
     
     # Get thinking tokens used
     thinking_tokens = model.engine.get_last_thinking_tokens()
+    completion_tokens = model.engine.last_completion_tokens
+    total_tokens = model.engine.last_total_tokens
     
     return {
         "question": x,
         "correct_answer": y,
         "response": response.value,
         "accuracy": accuracy,
-        "thinking_tokens": thinking_tokens
+        "thinking_tokens": thinking_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens
     }
 
 def eval_dataset(dataset, model, eval_fn, task_eval_fn=None, max_samples=None):
@@ -94,6 +101,8 @@ def eval_dataset(dataset, model, eval_fn, task_eval_fn=None, max_samples=None):
     metrics = {
         "accuracy": np.mean([r["accuracy"] for r in results]),
         "thinking_tokens": np.mean([r["thinking_tokens"] for r in results]),
+        "completion_tokens": np.mean([r["completion_tokens"] for r in results]),
+        "total_tokens": np.mean([r["total_tokens"] for r in results]),
         "accuracy_stdev": np.std([r["accuracy"] for r in results]),
         "thinking_tokens_stdev": np.std([r["thinking_tokens"] for r in results]),
     }
@@ -105,20 +114,22 @@ if __name__ == "__main__":
     args = config()
     set_seed(args.seed)
     
-    # Create Claude engine with thinking support
-    claude_engine = ThinkingChatAnthropic(
+    # Create DeepSeek engine with thinking support
+    deepseek_engine = ThinkingDeepseekEngine(
         model_string=args.model,
         thinking_enabled=True,
-        thinking_budget=args.thinking_budget
+        thinking_budget=args.thinking_budget,
+        api_key=args.api_key,
+        base_url=args.base_url
     )
     
     # Set as backward engine for TextGrad
-    tg.set_backward_engine(claude_engine, override=True)
+    tg.set_backward_engine(deepseek_engine, override=True)
     
     # Load dataset and evaluation function
     train_set, val_set, test_set, task_eval_fn = load_task(
         args.task, 
-        evaluation_api=claude_engine
+        evaluation_api=deepseek_engine
     )
     
     print(f"Dataset loaded: {args.task}")
@@ -136,18 +147,22 @@ if __name__ == "__main__":
     )
     
     # Create model and loss function
-    model = tg.BlackboxLLM(claude_engine, system_prompt=system_prompt)
-    token_loss = ClaudeThinkingEfficiencyLoss(
-        evaluation_api=claude_engine,
+    model = tg.BlackboxLLM(deepseek_engine, system_prompt=system_prompt)
+    token_loss = DeepseekThinkingEfficiencyLoss(
+        evaluation_api=deepseek_engine,
         accuracy_weight=args.accuracy_weight,
         token_weight=args.token_weight
     )
     
     # Create optimizer
     optimizer = tg.TextualGradientDescent(
-        engine=claude_engine,
+        engine=deepseek_engine,
         parameters=[system_prompt],
-        constraints=["The prompt must encourage efficient thinking while maintaining accuracy."]
+        constraints=[
+            "The prompt must encourage efficient thinking while maintaining accuracy.",
+            "The prompt should guide the model to use as few tokens as possible for reasoning.",
+            "The prompt must be clear and specific, directing the model to solve problems directly."
+        ]
     )
     
     # Store results
@@ -169,10 +184,11 @@ if __name__ == "__main__":
         model, 
         token_loss, 
         task_eval_fn, 
-        max_samples=5
+        max_samples=args.eval_samples
     )
     
     print(f"Initial metrics: {initial_metrics}")
+    results["initial_metrics"] = initial_metrics
     
     # Training loop
     train_loader = tg.tasks.DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
@@ -202,14 +218,17 @@ if __name__ == "__main__":
                 
                 # Calculate metrics for this example
                 accuracy = 1 if y in response.value else 0
-                thinking_tokens = claude_engine.get_last_thinking_tokens()
+                thinking_tokens = deepseek_engine.get_last_thinking_tokens()
+                completion_tokens = deepseek_engine.last_completion_tokens
                 
                 step_data = {
                     "question": x,
                     "answer": y,
                     "response": response.value,
                     "accuracy": accuracy,
-                    "thinking_tokens": thinking_tokens
+                    "thinking_tokens": thinking_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": thinking_tokens + completion_tokens
                 }
                 epoch_data["steps"].append(step_data)
             
@@ -233,21 +252,21 @@ if __name__ == "__main__":
             model,
             token_loss,
             task_eval_fn,
-            max_samples=5
+            max_samples=args.eval_samples
         )
         
         epoch_data["validation_metrics"] = val_metrics
         results["epochs"].append(epoch_data)
         
-        print(f"\nEpoch {epoch} metrics: {val_metrics}")
+        print(f"\nEpoch {epoch} validation metrics: {val_metrics}")
     
-    # Final evaluation
+    # Final evaluation on test set
     final_results, final_metrics = eval_dataset(
         test_set,
         model,
         token_loss,
         task_eval_fn,
-        max_samples=10
+        max_samples=args.eval_samples * 2
     )
     
     results["final_prompt"] = system_prompt.value
@@ -256,7 +275,7 @@ if __name__ == "__main__":
     # Save results
     results_dir = "results"
     os.makedirs(results_dir, exist_ok=True)
-    result_file = os.path.join(results_dir, f"claude_thinking_opt_{args.task}_{args.model.split('-')[-1]}.json")
+    result_file = os.path.join(results_dir, f"deepseek_thinking_opt_{args.task}_{args.model.replace('-', '_')}.json")
     
     with open(result_file, 'w') as f:
         json.dump(results, f, indent=2)
