@@ -42,10 +42,10 @@ class ThinkingO1Engine(ChatOpenAI):
         """Override generate to include reasoning_effort parameter and track token usage."""
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
-        # Check cache first
-        cache_or_none = self._check_cache(sys_prompt_arg + prompt)
-        if cache_or_none is not None:
-            return cache_or_none
+        # # Check cache first
+        # cache_or_none = self._check_cache(sys_prompt_arg + prompt)
+        # if cache_or_none is not None:
+        #     return cache_or_none
         
         # Make API call with reasoning parameter
         response = self.client.chat.completions.create(
@@ -61,22 +61,14 @@ class ThinkingO1Engine(ChatOpenAI):
         response_text = response.choices[0].message.content
         
         # Cache the result
-        self._save_cache(sys_prompt_arg + prompt, response_text)
+        # self._save_cache(sys_prompt_arg + prompt, response_text)
         
         # Store usage data
         usage = response.usage.model_dump()
-        if 'completion_tokens_details' in usage and 'reasoning_tokens' in usage['completion_tokens_details']:
-            self.last_reasoning_tokens = usage['completion_tokens_details']['reasoning_tokens']
-        else:
-            self.last_reasoning_tokens = 0
+        self.last_reasoning_tokens = usage['completion_tokens_details']['reasoning_tokens']
         
-        self.last_completion_tokens = usage.get('completion_tokens', 0)
-        self.last_total_tokens = usage.get('total_tokens', 0)
-        
-        # Try to extract reasoning trace if available in the response structure
-        self.last_reasoning = "Reasoning process not directly accessible"
-        if hasattr(response, 'reasoning') and response.reasoning:
-            self.last_reasoning = response.reasoning
+        self.last_completion_tokens = usage.get('completion_tokens')
+        self.last_total_tokens = usage.get('total_tokens')
         
         return response_text
     

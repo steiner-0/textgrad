@@ -6,8 +6,7 @@ load_dotenv(override=True)
 from tqdm import tqdm
 import textgrad as tg
 from textgrad.tasks import load_task
-from textgrad.engine.deepseek_thinking_engine import ThinkingDeepseekEngine
-from textgrad.ds_token_efficiency_loss import DeepseekThinkingEfficiencyLoss
+from textgrad.o1_reasoning_efficiency_loss import O1ReasoningEfficiencyLoss
 
 import numpy as np
 import json
@@ -15,27 +14,29 @@ import os
 import random
 
 def config():
-    parser = argparse.ArgumentParser(description="Optimize a prompt for DeepSeek's thinking token efficiency.")
-    parser.add_argument("--task", type=str, default="GSM8K_DSPy", help="The task to evaluate the model on.")
-    parser.add_argument("--model", type=str, default="deepseek-reasoner", help="DeepSeek model to use.")
-    parser.add_argument("--thinking_budget", type=int, default=16000, help="Budget for thinking tokens.")
-    parser.add_argument("--batch_size", type=int, default=20, help="The batch size to use for training.")
-    parser.add_argument("--max_epochs", type=int, default=5, help="The maximum number of epochs to train for.")
+    parser = argparse.ArgumentParser(description="Optimize a prompt for OpenAI's reasoning efficiency.")
+    parser.add_argument("--task", type=str, default="BBH_object_counting", help="The task to evaluate the model on.")
+    parser.add_argument("--model", type=str, default="gpt-4o", help="OpenAI model to use.")
+    parser.add_argument("--evaluation_engine", type=str, default="gpt-4o", help="OpenAI model to use for evaluation.")
+    parser.add_argument("--test_engine", type=str, default="gpt-3.5-turbo", help="Model to test optimized prompts on.")
+    parser.add_argument("--batch_size", type=int, default=3, help="The batch size to use for training.")
+    parser.add_argument("--max_epochs", type=int, default=3, help="The maximum number of epochs to train for.")
+    parser.add_argument("--reasoning_effort", type=str, default="medium", 
+                         choices=["low", "medium", "high"], 
+                         help="Target level of reasoning effort.")
     parser.add_argument("--accuracy_weight", type=float, default=0.3, help="Weight for accuracy.")
-    parser.add_argument("--token_weight", type=float, default=0.7, help="Weight for token efficiency.")
+    parser.add_argument("--efficiency_weight", type=float, default=0.7, help="Weight for reasoning efficiency.")
     parser.add_argument("--num_threads", type=int, default=4, help="Number of threads for evaluation.")
+    parser.add_argument("--run_validation", action="store_true", help="Whether to run validation or not.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
-    parser.add_argument("--api_key", type=str, default=None, help="DeepSeek API key (otherwise uses DEEPSEEK_API_KEY env var).")
-    parser.add_argument("--base_url", type=str, default="https://api.deepseek.com/v1", help="DeepSeek API base URL.")
-    parser.add_argument("--eval_samples", type=int, default=5, help="Number of samples to use for evaluation.")
     return parser.parse_args()
 
 def set_seed(seed):
     np.random.seed(seed)
     random.seed(seed)
 
-def eval_sample(sample, model, eval_fn, task_eval_fn=None):
-    """Evaluate a single sample for accuracy and token usage."""
+def eval_sample(sample, model, task_eval_fn=None):
+    """Evaluate a single sample for accuracy and efficiency."""
     x, y = sample
     
     # Create variables
@@ -57,23 +58,19 @@ def eval_sample(sample, model, eval_fn, task_eval_fn=None):
         # Default string match
         accuracy = 1 if y in response.value else 0
     
-    # Get thinking tokens used
-    thinking_tokens = model.engine.get_last_thinking_tokens()
-    completion_tokens = model.engine.last_completion_tokens
-    total_tokens = model.engine.last_total_tokens
+    # Estimate response qualities
+    response_length = len(response.value.split())
     
     return {
         "question": x,
         "correct_answer": y,
         "response": response.value,
         "accuracy": accuracy,
-        "thinking_tokens": thinking_tokens,
-        "completion_tokens": completion_tokens,
-        "total_tokens": total_tokens
+        "response_length": response_length
     }
 
-def eval_dataset(dataset, model, eval_fn, task_eval_fn=None, max_samples=None):
-    """Evaluate a dataset for accuracy and token efficiency."""
+def eval_dataset(dataset, model, task_eval_fn=None, max_samples=None):
+    """Evaluate a dataset for accuracy and efficiency."""
     if max_samples is None or max_samples > len(dataset):
         max_samples = len(dataset)
     
@@ -83,7 +80,7 @@ def eval_dataset(dataset, model, eval_fn, task_eval_fn=None, max_samples=None):
         futures = []
         for i in range(max_samples):
             sample = dataset[i]
-            future = executor.submit(eval_sample, sample, model, eval_fn, task_eval_fn)
+            future = executor.submit(eval_sample, sample, model, task_eval_fn)
             futures.append(future)
         
         with tqdm(total=len(futures), desc="Evaluating") as pbar:
@@ -93,41 +90,52 @@ def eval_dataset(dataset, model, eval_fn, task_eval_fn=None, max_samples=None):
                 
                 # Update progress display
                 avg_accuracy = np.mean([r["accuracy"] for r in results])
-                avg_tokens = np.mean([r["thinking_tokens"] for r in results])
-                pbar.set_description(f"Acc: {avg_accuracy:.3f}, Tokens: {avg_tokens:.1f}")
+                avg_length = np.mean([r["response_length"] for r in results])
+                pbar.set_description(f"Acc: {avg_accuracy:.3f}, Length: {avg_length:.1f}")
                 pbar.update(1)
     
     # Calculate metrics
     metrics = {
         "accuracy": np.mean([r["accuracy"] for r in results]),
-        "thinking_tokens": np.mean([r["thinking_tokens"] for r in results]),
-        "completion_tokens": np.mean([r["completion_tokens"] for r in results]),
-        "total_tokens": np.mean([r["total_tokens"] for r in results]),
+        "response_length": np.mean([r["response_length"] for r in results]),
         "accuracy_stdev": np.std([r["accuracy"] for r in results]),
-        "thinking_tokens_stdev": np.std([r["thinking_tokens"] for r in results]),
+        "response_length_stdev": np.std([r["response_length"] for r in results]),
     }
     
     return results, metrics
+
+def run_validation_revert(system_prompt, results, model, eval_fn, val_set):
+    """Run validation and revert if performance degrades."""
+    val_performance = np.mean(eval_dataset(val_set, model, eval_fn, max_samples=5)[0])
+    previous_performance = np.mean(results["validation_acc"][-1])
+    print(f"Validation accuracy: {val_performance}")
+    print(f"Previous accuracy: {previous_performance}")
+    previous_prompt = results["prompt"][-1]
+    
+    if val_performance < previous_performance:
+        print(f"Rejected prompt: {system_prompt.value}")
+        system_prompt.set_value(previous_prompt)
+        val_performance = previous_performance
+
+    results["validation_acc"].append(val_performance)
+    return val_performance
 
 # Main execution
 if __name__ == "__main__":
     args = config()
     set_seed(args.seed)
     
-    # Create DeepSeek engine with thinking support
-    deepseek_engine = ThinkingDeepseekEngine(
-        model_string=args.model,
-        api_key=args.api_key,
-        base_url=args.base_url
-    )
+    # Create engines
+    eval_engine = tg.get_engine(engine_name=args.evaluation_engine)
+    test_engine = tg.get_engine(engine_name=args.test_engine)
     
     # Set as backward engine for TextGrad
-    tg.set_backward_engine(deepseek_engine, override=True)
+    tg.set_backward_engine(eval_engine, override=True)
     
     # Load dataset and evaluation function
     train_set, val_set, test_set, task_eval_fn = load_task(
         args.task, 
-        evaluation_api=deepseek_engine
+        evaluation_api=eval_engine
     )
     
     print(f"Dataset loaded: {args.task}")
@@ -141,52 +149,54 @@ if __name__ == "__main__":
     system_prompt = tg.Variable(
         STARTING_SYSTEM_PROMPT,
         requires_grad=True,
-        role_description="system prompt designed to encourage efficient reasoning"
+        role_description=f"system prompt designed for {args.reasoning_effort} reasoning effort"
     )
     
-    # Create model and loss function
-    model = tg.BlackboxLLM(deepseek_engine, system_prompt=system_prompt)
-    token_loss = DeepseekThinkingEfficiencyLoss(
-        evaluation_api=deepseek_engine,
+    # Create models for optimization and testing
+    optimization_model = tg.BlackboxLLM(eval_engine, system_prompt=system_prompt)
+    test_model = tg.BlackboxLLM(test_engine, system_prompt=system_prompt)
+    
+    # Create efficiency loss
+    efficiency_loss = O1ReasoningEfficiencyLoss(
+        evaluation_api=eval_engine,
         accuracy_weight=args.accuracy_weight,
-        token_weight=args.token_weight
+        efficiency_weight=args.efficiency_weight,
+        reasoning_effort=args.reasoning_effort
     )
     
     # Create optimizer
     optimizer = tg.TextualGradientDescent(
-        engine=deepseek_engine,
+        engine=eval_engine,
         parameters=[system_prompt],
-        constraints=[
-            "The prompt must encourage efficient thinking while maintaining accuracy.",
-            "The prompt should guide the model to use as few tokens as possible for reasoning.",
-            "The prompt must be clear and specific, directing the model to solve problems directly."
-        ]
+        constraints=[f"The prompt must encourage {args.reasoning_effort} reasoning effort while maintaining accuracy."]
     )
     
     # Store results
     results = {
         "initial_prompt": STARTING_SYSTEM_PROMPT,
         "epochs": [],
+        "prompt": [STARTING_SYSTEM_PROMPT],
+        "validation_acc": [0.0],
+        "test_acc": [0.0],
         "final_prompt": "",
         "task": args.task,
         "model": args.model,
-        "thinking_budget": args.thinking_budget,
+        "reasoning_effort": args.reasoning_effort,
         "accuracy_weight": args.accuracy_weight,
-        "token_weight": args.token_weight
+        "efficiency_weight": args.efficiency_weight
     }
     
     # Evaluate initial performance
     print("\nEvaluating initial performance...")
     initial_results, initial_metrics = eval_dataset(
         test_set, 
-        model, 
-        token_loss, 
+        test_model, 
         task_eval_fn, 
-        max_samples=args.eval_samples
+        max_samples=5
     )
     
     print(f"Initial metrics: {initial_metrics}")
-    results["initial_metrics"] = initial_metrics
+    results["test_acc"][0] = initial_metrics["accuracy"]
     
     # Training loop
     train_loader = tg.tasks.DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
@@ -208,25 +218,22 @@ if __name__ == "__main__":
                 y_var = tg.Variable(y, requires_grad=False, role_description="correct answer")
                 
                 # Get model response
-                response = model(x_var)
+                response = optimization_model(x_var)
                 
-                # Compute token efficiency loss
-                loss = token_loss(system_prompt, x_var, response, y_var)
+                # Compute efficiency loss
+                loss = efficiency_loss(system_prompt, x_var, response, y_var)
                 step_losses.append(loss)
                 
                 # Calculate metrics for this example
                 accuracy = 1 if y in response.value else 0
-                thinking_tokens = deepseek_engine.get_last_thinking_tokens()
-                completion_tokens = deepseek_engine.last_completion_tokens
+                response_length = len(response.value.split())
                 
                 step_data = {
                     "question": x,
                     "answer": y,
                     "response": response.value,
                     "accuracy": accuracy,
-                    "thinking_tokens": thinking_tokens,
-                    "completion_tokens": completion_tokens,
-                    "total_tokens": thinking_tokens + completion_tokens
+                    "response_length": response_length
                 }
                 epoch_data["steps"].append(step_data)
             
@@ -240,40 +247,45 @@ if __name__ == "__main__":
             print(f"\nPrompt after step {step}:")
             print(system_prompt.value)
             
+            # Run validation if requested
+            if args.run_validation:
+                val_acc = run_validation_revert(system_prompt, results, test_model, task_eval_fn, val_set)
+                print(f"Validation accuracy: {val_acc:.3f}")
+            
+            # Test on the test set
+            test_results, test_metrics = eval_dataset(
+                test_set,
+                test_model,
+                task_eval_fn,
+                max_samples=5
+            )
+            results["test_acc"].append(test_metrics["accuracy"])
+            results["prompt"].append(system_prompt.value)
+            
+            print(f"Test accuracy: {test_metrics['accuracy']:.3f}")
+            
             # Break after a few steps to keep the process manageable
             if step >= 2:
                 break
         
-        # Evaluate on validation set
-        val_results, val_metrics = eval_dataset(
-            val_set,
-            model,
-            token_loss,
-            task_eval_fn,
-            max_samples=args.eval_samples
-        )
-        
-        epoch_data["validation_metrics"] = val_metrics
+        # Save epoch data
         results["epochs"].append(epoch_data)
-        
-        print(f"\nEpoch {epoch} validation metrics: {val_metrics}")
     
-    # Final evaluation on test set
+    # Final evaluation
     final_results, final_metrics = eval_dataset(
         test_set,
-        model,
-        token_loss,
+        test_model,
         task_eval_fn,
-        max_samples=args.eval_samples * 2
+        max_samples=10
     )
     
     results["final_prompt"] = system_prompt.value
     results["final_metrics"] = final_metrics
     
     # Save results
-    results_dir = "results"
+    results_dir = "./results/prompt_optimization"
     os.makedirs(results_dir, exist_ok=True)
-    result_file = os.path.join(results_dir, f"deepseek_thinking_opt_{args.task}_{args.model.replace('-', '_')}.json")
+    result_file = os.path.join(results_dir, f"openai_reasoning_opt_{args.task}_{args.reasoning_effort}.json")
     
     with open(result_file, 'w') as f:
         json.dump(results, f, indent=2)

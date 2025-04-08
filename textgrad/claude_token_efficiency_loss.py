@@ -68,7 +68,7 @@ class ClaudeThinkingEfficiencyLoss(Module):
             A Variable containing feedback on how to improve token efficiency
         """
         # Get the thinking trace and token count
-        thinking_trace = self.evaluation_api.last_thinking.text if hasattr(self.evaluation_api.last_thinking, 'text') else ""
+        thinking_trace = self.evaluation_api.last_thinking.text
         token_count = self.evaluation_api.get_last_thinking_tokens()
         
         # Prepare inputs for the formatter

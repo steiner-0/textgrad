@@ -8,8 +8,6 @@ class ThinkingDeepseekEngine(ChatOpenAI):
     
     def __init__(self, model_string="deepseek-reasoner", 
                  system_prompt="You are a helpful, creative, and smart assistant.",
-                 thinking_enabled=True,
-                 thinking_budget=16000,
                  api_key=None,
                  base_url="https://api.deepseek.com/v1"):
         """
@@ -29,23 +27,13 @@ class ThinkingDeepseekEngine(ChatOpenAI):
             if api_key is None:
                 raise ValueError("Please set the DEEPSEEK_API_KEY environment variable or provide api_key parameter")
         
-        # Save the original API key to restore environment after parent init
-        original_openai_key = os.getenv("OPENAI_API_KEY")
-        os.environ["OPENAI_API_KEY"] = api_key
-        
         # Initialize parent class
         super().__init__(model_string=model_string, system_prompt=system_prompt)
         
         # Create custom client
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         
-        # Restore original OpenAI key if it existed
-        if original_openai_key:
-            os.environ["OPENAI_API_KEY"] = original_openai_key
-        
         # Set thinking parameters
-        self.thinking_enabled = thinking_enabled
-        self.thinking_budget = thinking_budget
         self.last_thinking = None
         self.last_thinking_tokens = 0
         self.last_completion_tokens = 0
@@ -56,9 +44,9 @@ class ThinkingDeepseekEngine(ChatOpenAI):
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
         # Check cache first
-        cache_or_none = self._check_cache(sys_prompt_arg + prompt)
-        if cache_or_none is not None:
-            return cache_or_none
+        # cache_or_none = self._check_cache(sys_prompt_arg + prompt)
+        # if cache_or_none is not None:
+        #     return cache_or_none
         
         # Make API call, ensure correct parameters for DeepSeek
         response = self.client.chat.completions.create(
@@ -76,7 +64,7 @@ class ThinkingDeepseekEngine(ChatOpenAI):
         response_text = response.choices[0].message.content
         
         # Cache the result
-        self._save_cache(sys_prompt_arg + prompt, response_text)
+        # self._save_cache(sys_prompt_arg + prompt, response_text)
         
         # Store usage data - handling DeepSeek-specific structure
         usage = response.usage.model_dump()

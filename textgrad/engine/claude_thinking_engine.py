@@ -20,9 +20,9 @@ class ThinkingChatAnthropic(ChatAnthropic):
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
         # Check cache first
-        cache_or_none = self._check_cache(sys_prompt_arg + prompt)
-        if cache_or_none is not None:
-            return cache_or_none
+        # cache_or_none = self._check_cache(sys_prompt_arg + prompt)
+        # if cache_or_none is not None:
+        #     return cache_or_none
         
         # Configure thinking parameter
         thinking_config = None
@@ -47,7 +47,7 @@ class ThinkingChatAnthropic(ChatAnthropic):
         response_text = response.content[1].text
         
         # Cache the result
-        self._save_cache(sys_prompt_arg + prompt, response_text)
+        # self._save_cache(sys_prompt_arg + prompt, response_text)
         
         # Store thinking in a property that can be accessed
         self.last_thinking = response.content[0].thinking 

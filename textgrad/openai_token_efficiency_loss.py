@@ -39,23 +39,18 @@ class O1ReasoningEfficiencyLoss(Module):
             "System Prompt: {system_prompt}\n\n"
             "Question: {question}\n\n"
             "Response: {response}\n\n"
-            "Reasoning Effort Level: {reasoning_effort}\n\n"
-            "The model used {reasoning_tokens} tokens for its reasoning process and {completion_tokens} tokens for its final answer.\n\n"
+            "The model used {reasoning_tokens} tokens for its reasoning process.\n\n"
             "Evaluate this system prompt on token efficiency. Provide specific feedback on how the "
             "system prompt could be improved to make the model's reasoning process more efficient while still reaching "
             "the correct answer. Focus on encouraging the model to eliminate unnecessary steps, reduce redundancy, "
-            "and adopt a more concise thinking process. Your feedback should help improve the prompt to achieve better "
-            "token efficiency with the o1 model's reasoning capabilities, even when the reasoning_effort parameter is "
-            "set to '{reasoning_effort}'."
+            "and adopt a more concise thinking process."
         )
         
         self.fields = {
             "system_prompt": None, 
             "question": None, 
             "response": None, 
-            "reasoning_effort": None,
-            "reasoning_tokens": None,
-            "completion_tokens": None
+            "reasoning_tokens": None
         }
         
         self.formatted_llm_call = FormattedLLMCall(
@@ -80,22 +75,20 @@ class O1ReasoningEfficiencyLoss(Module):
         """
         # Get the token counts and reasoning effort
         reasoning_tokens = self.evaluation_api.last_reasoning_tokens
-        completion_tokens = self.evaluation_api.last_completion_tokens
-        reasoning_effort = self.evaluation_api.reasoning_effort
+        # completion_tokens = self.evaluation_api.last_completion_tokens
+        # reasoning_effort = self.evaluation_api.reasoning_effort
         
         # Check if the answer is correct (if correct_answer is provided)
-        is_correct = False
-        if correct_answer is not None:
-            is_correct = correct_answer.value in response.value
+        # is_correct = False
+        # if correct_answer is not None:
+        #     is_correct = correct_answer.value in response.value
         
         # Prepare inputs for the formatter
         inputs = {
             "system_prompt": system_prompt,
             "question": question,
             "response": response,
-            "reasoning_effort": Variable(reasoning_effort, requires_grad=False, role_description="reasoning effort level"),
-            "reasoning_tokens": Variable(str(reasoning_tokens), requires_grad=False, role_description="reasoning token count"),
-            "completion_tokens": Variable(str(completion_tokens), requires_grad=False, role_description="completion token count")
+            "reasoning_tokens": Variable(str(reasoning_tokens), requires_grad=False, role_description="reasoning token count")
         }
         
         # Get feedback on token efficiency
@@ -105,9 +98,9 @@ class O1ReasoningEfficiencyLoss(Module):
         )
         
         # Add information about correctness to the feedback if available
-        if correct_answer is not None:
-            correctness_info = f"\n\nThe answer was {'correct' if is_correct else 'incorrect'}. "
-            correctness_info += f"The system prompt should be optimized to maintain accuracy at the '{reasoning_effort}' reasoning effort level while reducing token usage."
-            efficiency_feedback.value += correctness_info
+        # if correct_answer is not None:
+        #     correctness_info = f"\n\nThe answer was {'correct' if is_correct else 'incorrect'}. "
+        #     correctness_info += f"The system prompt should be optimized to maintain accuracy at the '{reasoning_effort}' reasoning effort level while reducing token usage."
+        #     efficiency_feedback.value += correctness_info
         
         return efficiency_feedback
