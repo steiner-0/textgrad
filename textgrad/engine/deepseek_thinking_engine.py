@@ -54,10 +54,7 @@ class ThinkingDeepseekEngine(ChatOpenAI):
             messages=[
                 {"role": "system", "content": sys_prompt_arg},
                 {"role": "user", "content": prompt}
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p
+            ]
         )
         
         # Get response text

@@ -192,10 +192,7 @@ if __name__ == "__main__":
         engine=o1_engine,
         parameters=[system_prompt],
         constraints=[
-            "The prompt must encourage efficient reasoning while maintaining accuracy.",
-            "The prompt should guide the model to use as few tokens as possible for reasoning.",
-            "The prompt must be clear and specific, directing the model to solve problems directly.",
-            f"The prompt should work well with reasoning_effort={args.reasoning_effort}."
+            "The prompt must encourage efficient reasoning while maintaining accuracy."
         ]
     )
     

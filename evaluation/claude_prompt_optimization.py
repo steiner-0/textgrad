@@ -169,7 +169,7 @@ if __name__ == "__main__":
         model, 
         token_loss, 
         task_eval_fn, 
-        max_samples=5
+        max_samples=args.eval_samples
     )
     
     print(f"Initial metrics: {initial_metrics}")
@@ -233,7 +233,7 @@ if __name__ == "__main__":
             model,
             token_loss,
             task_eval_fn,
-            max_samples=5
+            max_samples=args.eval_samples
         )
         
         epoch_data["validation_metrics"] = val_metrics
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         model,
         token_loss,
         task_eval_fn,
-        max_samples=10
+        max_samples=args.eval_samples * 2
     )
     
     results["final_prompt"] = system_prompt.value

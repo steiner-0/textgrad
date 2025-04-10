@@ -157,9 +157,7 @@ if __name__ == "__main__":
         engine=deepseek_engine,
         parameters=[system_prompt],
         constraints=[
-            "The prompt must encourage efficient thinking while maintaining accuracy.",
-            "The prompt should guide the model to use as few tokens as possible for reasoning.",
-            "The prompt must be clear and specific, directing the model to solve problems directly."
+            "The prompt must encourage efficient thinking while maintaining accuracy."
         ]
     )
     
