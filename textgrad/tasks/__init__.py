@@ -1,3 +1,4 @@
+import re
 from .mmlu import MMLU, MMLUInstanceDataset
 from .base import Dataset, DataLoader
 from .leetcode import LeetCodeHardEval
@@ -10,6 +11,7 @@ AVAILABLE_DATASETS = [
     "BBH_object_counting",
     "BBH_word_sorting",
     "GSM8K_DSPy",
+    "MATH500",
 ]
 
 AVAILABLE_INSTANCE_DATASETS = [
@@ -84,7 +86,71 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
         fn_purpose = "The runtime of string-based function that checks if the prediction is correct."
         eval_fn = StringBasedFunction(string_based_equality_fn, function_purpose=fn_purpose)
         return train_set, val_set, test_set, eval_fn
-    
+    elif task_name == "MATH500":
+        from textgrad.loss import MultiFieldTokenParsedEvaluation
+        from .math500 import MATH500
+        from .big_bench_hard import string_based_equality_fn
+        from textgrad.autograd.string_based_ops import StringBasedFunction
+        
+        train_set = MATH500(split="train", *args, **kwargs)
+        val_set = MATH500(split="val", *args, **kwargs)
+        test_set = MATH500(split="test", *args, **kwargs)
+        
+        # We'll use similar evaluation to GSM8K
+        fn_purpose = "The function that checks if the prediction is correct for MATH500."
+        
+        # Custom string equality function for MATH500
+        def math500_equality_fn(prediction, ground_truth_answer):
+            # Extract answer from prediction
+            response_text = prediction.value
+            correct_answer = ground_truth_answer.value
+            
+            # Extract answer from response
+            answer_patterns = [
+                r"(?:final answer|answer)(?:\s*[:=]\s*)(.*?)(?:\s*$|\n)",
+                r"(?:\s|^)(?:final answer|answer)(?:\s+is\s+)(.*?)(?:\s*$|\n)",
+                r"(?:\s|^)(?:the answer is\s+)(.*?)(?:\s*$|\n)",
+                r"(?:\s|^)(?:therefore,\s+.*?=\s*)(.*?)(?:\s*$|\n)"
+            ]
+            
+            extracted_answer = None
+            for pattern in answer_patterns:
+                match = re.search(pattern, response_text, re.IGNORECASE)
+                if match:
+                    extracted_answer = match.group(1).strip()
+                    break
+            
+            if not extracted_answer:
+                # If no clear answer pattern, take the last line or equation result
+                lines = response_text.strip().split('\n')
+                for line in reversed(lines):
+                    if '=' in line:
+                        extracted_answer = line.split('=')[-1].strip()
+                        break
+                if not extracted_answer and lines:
+                    extracted_answer = lines[-1].strip()
+            
+            # Clean up both answers for comparison
+            def clean_answer(ans):
+                # Remove whitespace, convert to lowercase
+                ans = re.sub(r'\s+', '', ans.lower())
+                # Remove common math notation that doesn't affect the value
+                ans = re.sub(r'\\', '', ans)  # LaTeX backslashes
+                ans = re.sub(r'[(){}[\]]', '', ans)  # Brackets
+                return ans
+            
+            if extracted_answer:
+                clean_extracted = clean_answer(extracted_answer)
+                clean_correct = clean_answer(correct_answer)
+                
+                # Check for exact match
+                is_correct = clean_extracted == clean_correct
+                
+                return int(is_correct)
+            return 0  # No answer extracted
+        
+        eval_fn = StringBasedFunction(math500_equality_fn, function_purpose=fn_purpose)
+        return train_set, val_set, test_set, eval_fn
     else:
         raise ValueError(f"Task {task_name} not found.")
 

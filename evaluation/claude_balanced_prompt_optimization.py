@@ -30,7 +30,7 @@ class ThinkingChatAnthropic(ChatAnthropic):
         model_string="claude-3-7-sonnet-20250219",
         system_prompt="You are a helpful, creative, and smart assistant.",
         thinking_enabled=True,
-        thinking_budget=16000,
+        thinking_budget=40000,
         is_multimodal=False,
     ):
         super().__init__(
@@ -51,11 +51,11 @@ class ThinkingChatAnthropic(ChatAnthropic):
         
         # Configure thinking parameter
         thinking_config = None
-        if self.thinking_enabled:
-            thinking_config = {
-                "type": "enabled",
-                "budget_tokens": self.thinking_budget
-            }
+        thinking_config = {
+            "type": "enabled",
+            "budget_tokens": self.thinking_budget
+        }
+            
             
         # Make API call with thinking enabled
         response = self.client.messages.create(
@@ -65,7 +65,7 @@ class ThinkingChatAnthropic(ChatAnthropic):
             ],
             system=sys_prompt_arg,
             thinking=thinking_config,
-            **kwargs
+            max_tokens=60000,
         )
         
         # Get response text
@@ -83,7 +83,7 @@ class ThinkingChatAnthropic(ChatAnthropic):
             # Fallback to character-based estimation if tokenizer fails
             self.last_thinking_tokens = len(self.last_thinking) // 4
         
-        self.last_completion_tokens = len(response_text) // 4  # Approximate
+        self.last_completion_tokens = len(encoder.encode(response_text))  # Approximate
         self.last_total_tokens = self.last_thinking_tokens + self.last_completion_tokens
         
         return response_text
@@ -396,8 +396,8 @@ def config():
     parser.add_argument("--model", type=str, default="claude-3-7-sonnet-20250219", help="Claude model to use.")
     parser.add_argument("--custom_prompt", type=str, default=None, help="Custom starting prompt (overrides task's default prompt).")
     parser.add_argument("--prompt_file", type=str, default=None, help="File containing custom starting prompt.")
-    parser.add_argument("--batch_size", type=int, default=3, help="The batch size to use for training.")
-    parser.add_argument("--max_epochs", type=int, default=10, help="The maximum number of epochs to train for.")
+    parser.add_argument("--batch_size", type=int, default=10, help="The batch size to use for training.")
+    parser.add_argument("--max_epochs", type=int, default=5, help="The maximum number of epochs to train for.")
     parser.add_argument("--accuracy_weight", type=float, default=0.3, help="Weight for accuracy optimization (0-1).")
     parser.add_argument("--efficiency_weight", type=float, default=0.7, help="Weight for efficiency optimization (0-1).")
     parser.add_argument("--num_threads", type=int, default=4, help="Number of threads for evaluation.")
@@ -407,7 +407,6 @@ def config():
     parser.add_argument("--thinking_enabled", action="store_true", default=True, help="Enable Claude's thinking feature.")
     parser.add_argument("--run_validation", action="store_true", help="Run validation after each step and revert if performance decreases.")
     return parser.parse_args()
-
 
 def main():
     """Main execution function."""
@@ -448,7 +447,7 @@ def main():
     elif args.prompt_file:
         # Load custom prompt from file
         try:
-            with open(args.prompt_file, 'r') as f:
+            with open(args.prompt_file, 'r', encoding="utf-8") as f:
                 STARTING_SYSTEM_PROMPT = f.read().strip()
             print(f"Loaded custom prompt from file: {args.prompt_file}")
         except Exception as e:
