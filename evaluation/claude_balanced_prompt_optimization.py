@@ -2,8 +2,8 @@
 Balanced Prompt Optimization Tool
 
 This script optimizes prompts for both accuracy and reasoning efficiency
-using Claude 3.7 Sonnet. It alternates between optimization goals according
-to specified weights.
+using Claude 3.7 Sonnet with streaming support. It alternates between optimization 
+goals according to specified weights.
 """
 
 import argparse
@@ -14,6 +14,7 @@ import random
 import json
 import numpy as np
 from tqdm import tqdm
+from typing import List, Dict, Any, Optional, Union
 
 import textgrad as tg
 from textgrad.tasks import load_task
@@ -21,9 +22,12 @@ from textgrad.engine.anthropic import ChatAnthropic
 from textgrad.variable import Variable
 from textgrad.autograd import FormattedLLMCall
 
-# Define a thinking-enabled Claude engine
-class ThinkingChatAnthropic(ChatAnthropic):
-    """Extended ChatAnthropic engine with thinking parameter support."""
+# Import Anthropic libraries for streaming
+from anthropic import Anthropic
+
+# Define a thinking-enabled Claude engine with streaming support
+class StreamingThinkingChatAnthropic(ChatAnthropic):
+    """Extended ChatAnthropic engine with thinking parameter and streaming support."""
     
     def __init__(
         self,
@@ -44,53 +48,84 @@ class ThinkingChatAnthropic(ChatAnthropic):
         self.last_thinking_tokens = 0
         self.last_completion_tokens = 0
         self.last_total_tokens = 0
-    
+        
     def generate(self, content, system_prompt=None, **kwargs):
-        """Override generate to include thinking parameter and track token usage."""
+        """Override generate to include thinking parameter and track token usage, with streaming support."""
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
         # Configure thinking parameter
         thinking_config = None
-        thinking_config = {
-            "type": "enabled",
-            "budget_tokens": self.thinking_budget
-        }
-            
-            
-        # Make API call with thinking enabled
-        response = self.client.messages.create(
-            model=self.model_string,
-            messages=[
-                {"role": "user", "content": content}
-            ],
-            system=sys_prompt_arg,
-            thinking=thinking_config,
-            max_tokens=60000,
-        )
+        if self.thinking_enabled:
+            thinking_config = {
+                "type": "enabled",
+                "budget_tokens": self.thinking_budget
+            }
         
-        # Get response text
-        response_text = response.content[1].text
+        # Set up storage for response and thinking content
+        complete_response = ""
+        thinking_content = ""
         
-        # Store thinking in a property that can be accessed
-        self.last_thinking = response.content[0].thinking
+        # Define a function to run the streaming request
+        def run_streaming_request():
+            nonlocal complete_response, thinking_content
+            
+            # Create the client for streaming
+            with self.client.messages.stream(
+                model=self.model_string,
+                max_tokens=60000,
+                system=sys_prompt_arg,
+                thinking=thinking_config,
+                messages=[
+                    {"role": "user", "content": content}
+                ]
+            ) as stream:
+                print("\nStreaming response...")
+                
+                # Process the streaming response events
+                for event in stream:
+                    if event.type == "content_block_start":
+                        print(f"\nStarting {event.content_block.type} block...")
+                    
+                    elif event.type == "content_block_delta":
+                        if event.delta.type == "thinking_delta":
+                            thinking_content += event.delta.thinking
+                            print("*", end="", flush=True)  # Indicate thinking with *
+                        elif event.delta.type == "text_delta":
+                            complete_response += event.delta.text
+                            print(".", end="", flush=True)  # Indicate response with .
+                    
+                    elif event.type == "content_block_stop":
+                        print("\nBlock complete.")
+            
+            print("\nStreaming complete.")
+        
+        # Run the streaming request
+        run_streaming_request()
         
         # Estimate thinking tokens (could use a proper tokenizer)
         import tiktoken
         try:
             encoder = tiktoken.get_encoding("cl100k_base")
-            self.last_thinking_tokens = len(encoder.encode(self.last_thinking))
+            self.last_thinking_tokens = len(encoder.encode(thinking_content))
         except:
             # Fallback to character-based estimation if tokenizer fails
-            self.last_thinking_tokens = len(self.last_thinking) // 4
+            self.last_thinking_tokens = len(thinking_content) // 4
         
-        self.last_completion_tokens = len(encoder.encode(response_text))  # Approximate
+        self.last_completion_tokens = len(encoder.encode(complete_response))
         self.last_total_tokens = self.last_thinking_tokens + self.last_completion_tokens
         
-        return response_text
+        # Store thinking as a simple object with text attribute
+        class ThinkingContent:
+            def __init__(self, text):
+                self.text = text
+                
+        self.last_thinking = ThinkingContent(text=thinking_content)
+        
+        return complete_response
     
     def get_last_thinking_text(self):
         """Get the last thinking text."""
-        return self.last_thinking
+        return self.last_thinking.text 
     
     def get_last_thinking_tokens(self):
         """Get token count from the last thinking process."""
@@ -396,17 +431,19 @@ def config():
     parser.add_argument("--model", type=str, default="claude-3-7-sonnet-20250219", help="Claude model to use.")
     parser.add_argument("--custom_prompt", type=str, default=None, help="Custom starting prompt (overrides task's default prompt).")
     parser.add_argument("--prompt_file", type=str, default=None, help="File containing custom starting prompt.")
-    parser.add_argument("--batch_size", type=int, default=10, help="The batch size to use for training.")
-    parser.add_argument("--max_epochs", type=int, default=5, help="The maximum number of epochs to train for.")
+    parser.add_argument("--batch_size", type=int, default=3, help="The batch size to use for training.")
+    parser.add_argument("--max_epochs", type=int, default=10, help="The maximum number of epochs to train for.")
     parser.add_argument("--accuracy_weight", type=float, default=0.3, help="Weight for accuracy optimization (0-1).")
     parser.add_argument("--efficiency_weight", type=float, default=0.7, help="Weight for efficiency optimization (0-1).")
     parser.add_argument("--num_threads", type=int, default=4, help="Number of threads for evaluation.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed.")
     parser.add_argument("--eval_samples", type=int, default=5, help="Number of samples to use for evaluation.")
-    parser.add_argument("--thinking_budget", type=int, default=16000, help="Budget for thinking tokens.")
+    parser.add_argument("--thinking_budget", type=int, default=40000, help="Budget for thinking tokens.")
     parser.add_argument("--thinking_enabled", action="store_true", default=True, help="Enable Claude's thinking feature.")
-    parser.add_argument("--run_validation", action="store_true", help="Run validation after each step and revert if performance decreases.")
+    parser.add_argument("--run_validation", action="store_true", default=True, help="Run validation after each step and revert if performance decreases.")
+    parser.add_argument("--disable_streaming", action="store_true", help="Disable streaming responses.")
     return parser.parse_args()
+
 
 def main():
     """Main execution function."""
@@ -420,8 +457,8 @@ def main():
     np.random.seed(args.seed)
     random.seed(args.seed)
     
-    # Create Claude engine with thinking support
-    claude_engine = ThinkingChatAnthropic(
+    # Create Claude engine with thinking support and streaming
+    claude_engine = StreamingThinkingChatAnthropic(
         model_string=args.model,
         thinking_enabled=args.thinking_enabled,
         thinking_budget=args.thinking_budget
@@ -447,7 +484,7 @@ def main():
     elif args.prompt_file:
         # Load custom prompt from file
         try:
-            with open(args.prompt_file, 'r', encoding="utf-8") as f:
+            with open(args.prompt_file, 'r') as f:
                 STARTING_SYSTEM_PROMPT = f.read().strip()
             print(f"Loaded custom prompt from file: {args.prompt_file}")
         except Exception as e:
@@ -551,6 +588,7 @@ def main():
                 y_var = tg.Variable(y, requires_grad=False, role_description="correct answer")
                 
                 # Get model response
+                print(f"\nProcessing example: {x[:100]}...")  # Show start of the query
                 response = model(x_var)
                 
                 # Compute loss based on current focus
@@ -615,162 +653,6 @@ def main():
         
         epoch_data["focus"] = focus_name
         results["epochs"].append(epoch_data)
-    
-    # Final evaluation on test set
-    final_results, final_metrics = eval_dataset(
-        test_set,
-        model,
-        task_eval_fn,
-        max_samples=args.eval_samples * 2,
-        num_threads=args.num_threads
-    )
-    
-    results["final_prompt"] = system_prompt.value
-    results["final_metrics"] = final_metrics
-    
-    # Save results
-    results_dir = "results"
-    os.makedirs(results_dir, exist_ok=True)
-    result_file = os.path.join(
-        results_dir, 
-        f"balanced_opt_{args.task}_acc{args.accuracy_weight}_eff{args.efficiency_weight}.json"
-    )
-    
-    with open(result_file, 'w') as f:
-        json.dump(results, f, indent=2)
-    
-    # Print summary
-    print("\n=== Optimization Complete ===")
-    print(f"Initial metrics: {initial_metrics}")
-    print(f"Final metrics: {final_metrics}")
-    print(f"\nInitial prompt: {STARTING_SYSTEM_PROMPT}")
-    print(f"\nFinal prompt: {system_prompt.value}")
-    print(f"\nResults saved to: {result_file}")
-    
-    # Create model and loss functions
-    model = tg.BlackboxLLM(claude_engine, system_prompt=system_prompt)
-    accuracy_loss = AccuracyLoss(evaluation_api=claude_engine)
-    efficiency_loss = EfficiencyLoss(evaluation_api=claude_engine)
-    
-    # Create optimizer
-    optimizer = tg.TextualGradientDescent(
-        engine=claude_engine,
-        parameters=[system_prompt],
-        constraints=[
-            "The prompt must balance accuracy and efficiency in problem-solving.",
-            "The prompt should be clear and concise, avoiding redundancy."
-        ]
-    )
-    
-    # Store results
-    results = {
-        "initial_prompt": STARTING_SYSTEM_PROMPT,
-        "epochs": [],
-        "final_prompt": "",
-        "task": args.task,
-        "model": args.model,
-        "accuracy_weight": args.accuracy_weight,
-        "efficiency_weight": args.efficiency_weight
-    }
-    
-    # Normalize weights
-    total_weight = args.accuracy_weight + args.efficiency_weight
-    accuracy_weight = args.accuracy_weight / total_weight
-    efficiency_weight = args.efficiency_weight / total_weight
-    
-    print(f"Normalized weights - Accuracy: {accuracy_weight:.2f}, Efficiency: {efficiency_weight:.2f}")
-    
-    # Evaluate initial performance
-    print("\nEvaluating initial performance...")
-    initial_results, initial_metrics = eval_dataset(
-        test_set, 
-        model, 
-        task_eval_fn, 
-        max_samples=args.eval_samples,
-        num_threads=args.num_threads
-    )
-    
-    print(f"Initial metrics: {initial_metrics}")
-    results["initial_metrics"] = initial_metrics
-    
-    # Training loop
-    train_loader = tg.tasks.DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
-    
-    for epoch in range(args.max_epochs):
-        epoch_data = {
-            "epoch": epoch,
-            "prompt": system_prompt.value,
-            "steps": []
-        }
-        
-        # Determine focus for this epoch based on weights
-        # If accuracy_weight is 0.3 and efficiency_weight is 0.7, 
-        # we'll focus on accuracy 30% of the time and efficiency 70% of the time
-        focus_on_accuracy = random.random() < accuracy_weight
-        
-        focus_name = "accuracy" if focus_on_accuracy else "efficiency"
-        print(f"\nEpoch {epoch}: Focusing on {focus_name}")
-        
-        loss_fn = accuracy_loss if focus_on_accuracy else efficiency_loss
-        
-        for step, (batch_x, batch_y) in enumerate(tqdm(train_loader, desc=f"Epoch {epoch}")):
-            optimizer.zero_grad()
-            step_losses = []
-            
-            for (x, y) in zip(batch_x, batch_y):
-                # Create variables
-                x_var = tg.Variable(x, requires_grad=False, role_description="query to the model")
-                y_var = tg.Variable(y, requires_grad=False, role_description="correct answer")
-                
-                # Get model response
-                response = model(x_var)
-                
-                # Compute loss based on current focus
-                loss = loss_fn(system_prompt, x_var, response, y_var)
-                step_losses.append(loss)
-                
-                # Calculate metrics for this example
-                accuracy = 1 if y in response.value else 0
-                token_count = claude_engine.get_last_thinking_tokens()
-                
-                step_data = {
-                    "focus": focus_name,
-                    "question": x,
-                    "answer": y,
-                    "response": response.value,
-                    "accuracy": accuracy,
-                    "token_count": token_count,
-                }
-                epoch_data["steps"].append(step_data)
-            
-            # Backward pass through all losses
-            for loss in step_losses:
-                loss.backward()
-            
-            # Update the prompt
-            optimizer.step()
-            
-            print(f"\nPrompt after step {step}:")
-            print(system_prompt.value)
-            
-            # Break after a few steps to keep the process manageable
-            if step >= 2:
-                break
-        
-        # Evaluate on validation set
-        val_results, val_metrics = eval_dataset(
-            val_set,
-            model,
-            task_eval_fn,
-            max_samples=args.eval_samples,
-            num_threads=args.num_threads
-        )
-        
-        epoch_data["validation_metrics"] = val_metrics
-        epoch_data["focus"] = focus_name
-        results["epochs"].append(epoch_data)
-        
-        print(f"\nEpoch {epoch} validation metrics: {val_metrics}")
     
     # Final evaluation on test set
     final_results, final_metrics = eval_dataset(
