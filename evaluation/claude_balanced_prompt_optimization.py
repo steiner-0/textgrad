@@ -50,7 +50,7 @@ class StreamingThinkingChatAnthropic(ChatAnthropic):
         self.last_total_tokens = 0
         
     def generate(self, content, system_prompt=None, **kwargs):
-        """Override generate to include thinking parameter and track token usage, with streaming support."""
+        """Generate with retry logic for streaming"""
         sys_prompt_arg = system_prompt if system_prompt else self.system_prompt
         
         # Configure thinking parameter
@@ -61,67 +61,90 @@ class StreamingThinkingChatAnthropic(ChatAnthropic):
                 "budget_tokens": self.thinking_budget
             }
         
-        # Set up storage for response and thinking content
+        # Implement retry logic
+        max_retries = 3
+        retry_count = 0
+        backoff_factor = 2  # seconds
+        
+        while retry_count < max_retries:
+            try:
+                complete_response, thinking_content = self._stream_response(
+                    content, 
+                    sys_prompt_arg, 
+                    thinking_config
+                )
+                
+                # If we got here, streaming was successful
+                # Calculate token counts
+                import tiktoken
+                encoder = tiktoken.get_encoding("cl100k_base")
+                self.last_thinking_tokens = len(encoder.encode(thinking_content))
+                self.last_completion_tokens = len(encoder.encode(complete_response))
+                self.last_total_tokens = self.last_thinking_tokens + self.last_completion_tokens
+                
+                # Store thinking for later access
+                class ThinkingContent:
+                    def __init__(self, text):
+                        self.text = text
+                
+                self.last_thinking = ThinkingContent(text=thinking_content)
+                
+                return complete_response
+                
+            except Exception as e:
+                retry_count += 1
+                if retry_count == max_retries:
+                    # If we reach max retries, raise the exception
+                    raise e
+                wait_time = backoff_factor * (2 ** (retry_count - 1))  # Exponential backoff
+                
+                print(f"\nStreaming attempt {retry_count} failed: {str(e)}")
+                if retry_count < max_retries:
+                    print(f"Retrying in {wait_time} seconds...")
+                    import time
+                    time.sleep(wait_time)
+                else:
+                    print("Maximum retries reached. Raising exception.")
+                    raise RuntimeError(f"Failed to get complete response after {max_retries} attempts: {str(e)}")
+    
+    def _stream_response(self, content, system_prompt, thinking_config):
+        """
+        Stream the response without a timeout.
+        
+        Returns:
+            tuple: (complete_response, thinking_content)
+        """
         complete_response = ""
         thinking_content = ""
         
-        # Define a function to run the streaming request
-        def run_streaming_request():
-            nonlocal complete_response, thinking_content
+        with self.client.messages.stream(
+            model=self.model_string,
+            max_tokens=60000,
+            system=system_prompt,
+            thinking=thinking_config,
+            messages=[
+                {"role": "user", "content": content}
+            ]
+        ) as stream:
+            print("\nStarting streaming response...")
             
-            # Create the client for streaming
-            with self.client.messages.stream(
-                model=self.model_string,
-                max_tokens=60000,
-                system=sys_prompt_arg,
-                thinking=thinking_config,
-                messages=[
-                    {"role": "user", "content": content}
-                ]
-            ) as stream:
-                print("\nStreaming response...")
+            for event in stream:
+                if event.type == "content_block_start":
+                    print(f"\nStarting {event.content_block.type} block...")
                 
-                # Process the streaming response events
-                for event in stream:
-                    if event.type == "content_block_start":
-                        print(f"\nStarting {event.content_block.type} block...")
-                    
-                    elif event.type == "content_block_delta":
-                        if event.delta.type == "thinking_delta":
-                            thinking_content += event.delta.thinking
-                            print("*", end="", flush=True)  # Indicate thinking with *
-                        elif event.delta.type == "text_delta":
-                            complete_response += event.delta.text
-                            print(".", end="", flush=True)  # Indicate response with .
-                    
-                    elif event.type == "content_block_stop":
-                        print("\nBlock complete.")
-            
-            print("\nStreaming complete.")
-        
-        # Run the streaming request
-        run_streaming_request()
-        
-        # Estimate thinking tokens (could use a proper tokenizer)
-        import tiktoken
-        try:
-            encoder = tiktoken.get_encoding("cl100k_base")
-            self.last_thinking_tokens = len(encoder.encode(thinking_content))
-        except:
-            # Fallback to character-based estimation if tokenizer fails
-            self.last_thinking_tokens = len(thinking_content) // 4
-        
-        self.last_completion_tokens = len(encoder.encode(complete_response))
-        self.last_total_tokens = self.last_thinking_tokens + self.last_completion_tokens
-        
-        # Store thinking as a simple object with text attribute
-        class ThinkingContent:
-            def __init__(self, text):
-                self.text = text
+                elif event.type == "content_block_delta":
+                    if event.delta.type == "thinking_delta":
+                        thinking_content += event.delta.thinking
+                        print("*", end="", flush=True)  # Indicate thinking
+                    elif event.delta.type == "text_delta":
+                        complete_response += event.delta.text
+                        print(".", end="", flush=True)  # Indicate response
                 
-        self.last_thinking = ThinkingContent(text=thinking_content)
+                elif event.type == "content_block_stop":
+                    print("\nBlock complete.")
         
-        return complete_response
+        print("\nStreaming completed successfully")
+        return complete_response, thinking_content
     
     def get_last_thinking_text(self):
         """Get the last thinking text."""
