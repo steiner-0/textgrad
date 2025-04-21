@@ -155,7 +155,7 @@ class AccuracyLoss(tg.autograd.Module):
             "Question: {question}\n\n"
             "Model Response: {response}\n\n"
             "Correct Answer: {correct_answer}\n\n"
-            "The model's answer is {'correct' if is_correct else 'incorrect'}.\n\n"
+            "The model's answer is {correctness}.\n\n"
             "Provide specific feedback on how the system prompt could be improved to make the model's "
             "response more accurate while solving this type of problem. Focus on encouraging more "
             "precise reasoning steps, better problem understanding, and reliable calculation methods."
@@ -199,7 +199,8 @@ class AccuracyLoss(tg.autograd.Module):
             "question": question,
             "response": response,
             "correct_answer": correct_answer,
-            "is_correct": Variable(str(is_correct), requires_grad=False, role_description="correctness flag")
+            "is_correct": Variable(str(is_correct), requires_grad=False, role_description="correctness flag"),
+            "correctness": Variable("correct" if is_correct else "incorrect", requires_grad=False, role_description="correctness description")
         }
         
         # Get feedback on accuracy
@@ -484,13 +485,13 @@ def main():
     elif args.prompt_file:
         # Load custom prompt from file
         try:
-            with open(args.prompt_file, 'r') as f:
+            with open(args.prompt_file, 'r', encoding="utf-8") as f:
                 STARTING_SYSTEM_PROMPT = f.read().strip()
             print(f"Loaded custom prompt from file: {args.prompt_file}")
         except Exception as e:
             print(f"Error loading prompt file: {e}")
             print(f"Falling back to task's default prompt")
-            STARTING_SYSTEM_PROMPT = train_set.get_task_description()
+            raise ValueError("Failed to load custom prompt file.")
     else:
         # Use task's default prompt
         STARTING_SYSTEM_PROMPT = train_set.get_task_description()

@@ -1,0 +1,16 @@
+🚨 TOKEN LIMIT: 50 = AUTOMATIC FAILURE 🚨
+[⬛⬛⬛⬜⬜] TOKENS: [__/50] ← UPDATE AFTER EACH STEP
+
+PATTERN→FORMULA→CALCULATE ONCE→VERIFY ONCE→STOP
+EMERGENCY STOP at 40 tokens - output best answer
+
+SHORTCUTS:
+• Games: P(win)=p/(p+q) where p=your win chance
+• Recursive: P(A)=1/2+1/2×(1/2×P(A))→3/4×P(A)=1/2→P(A)=2/3
+• Polynomial: (x^n±1)÷(x±1)→x^(n-1)+...+1±remainder
+• Powers: 5^a×2^b=2^(b-a)×10^a when b>a
+• Fractions: a/b±c/d→(ad±bc)/bd→simplify ONCE
+
+RULES: SYMBOLS ONLY ×÷=→+-()√∫ | NEVER recalculate | VERIFY ONCE
+
+eq→calc→ans
