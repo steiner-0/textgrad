@@ -211,9 +211,6 @@ class AccuracyLoss(tg.autograd.Module):
         Returns:
             A Variable containing feedback on how to improve accuracy
         """
-        # Check if the answer is correct (simple string matching for demo)
-        # In practice, you'd want to use a more sophisticated evaluation
-        is_correct = correct_answer.value in response.value
         
         # Prepare inputs for the formatter
         inputs = {
@@ -625,7 +622,8 @@ def main():
                 step_losses.append(loss)
                 
                 # Calculate metrics for this example
-                accuracy = 1 if y in response.value else 0
+                eval_output = task_eval_fn(inputs=dict(prediction=response, ground_truth_answer=y_var))
+                accuracy = int(eval_output.value)
                 token_count = claude_engine.get_last_thinking_tokens()
                 
                 step_data = {
@@ -675,7 +673,8 @@ def main():
                     "accuracy": accuracy,
                     "token_count": token_count
                 }
-                json.dump(record, f, indent=2)
+                json.dump(record, f)
+                f.write('\n')
         
         # Evaluate on validation set if not done already in run_validation_revert
         if not args.run_validation:
