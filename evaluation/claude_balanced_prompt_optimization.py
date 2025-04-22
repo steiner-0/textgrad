@@ -8,6 +8,7 @@ goals according to specified weights.
 
 import argparse
 import concurrent.futures
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 import random
@@ -189,7 +190,7 @@ class AccuracyLoss(tg.autograd.Module):
             "question": None, 
             "response": None, 
             "correct_answer": None,
-            "is_correct": None
+            "correctness": None
         }
         
         self.formatted_llm_call = FormattedLLMCall(
@@ -222,7 +223,6 @@ class AccuracyLoss(tg.autograd.Module):
             "question": question,
             "response": response,
             "correct_answer": correct_answer,
-            "is_correct": Variable(str(is_correct), requires_grad=False, role_description="correctness flag"),
             "correctness": Variable("correct" if is_correct else "incorrect", requires_grad=False, role_description="correctness description")
         }
         
@@ -386,7 +386,7 @@ def eval_dataset(dataset, model, task_eval_fn=None, max_samples=None, num_thread
     
     return results, metrics
 
-def run_validation_revert(system_prompt, previous_prompt, model, eval_fn, val_set, max_samples=None, num_threads=None):
+def run_validation_revert(system_prompt, previous_prompt, focus_on_accuracy, model, eval_fn, val_set, max_samples=None, num_threads=None):
     """
     Evaluate performance on validation set and revert to previous prompt if performance decreases.
     
@@ -412,6 +412,7 @@ def run_validation_revert(system_prompt, previous_prompt, model, eval_fn, val_se
     )
     
     current_val_performance = val_metrics["accuracy"]
+    current_token_count = val_metrics["token_count"]
     
     # If a previous prompt exists, compare performance
     if previous_prompt:
@@ -431,18 +432,20 @@ def run_validation_revert(system_prompt, previous_prompt, model, eval_fn, val_se
         )
         
         previous_val_performance = prev_val_metrics["accuracy"]
+        previous_token_count = prev_val_metrics["token_count"]
         
         print(f"Validation performance - Current: {current_val_performance:.3f}, Previous: {previous_val_performance:.3f}")
         
         # If current prompt performs worse, keep reverting to previous prompt
         # Otherwise, restore the current prompt
-        if current_val_performance < previous_val_performance:
-            print(f"Reverting to previous prompt (validation accuracy: {previous_val_performance:.3f} > {current_val_performance:.3f})")
+        better_performance = current_val_performance >= previous_val_performance if focus_on_accuracy else previous_token_count >= current_token_count
+        if not better_performance:
+            print(f"Reverting to previous prompt. Accuracy: prev:{previous_val_performance:.3f}, current:{current_val_performance:.3f} | Tokens: prev:{previous_token_count:.1f}, current:{current_token_count:.1f}")
             return previous_val_performance
         else:
             # Restore current prompt as it performs better
             system_prompt.set_value(current_prompt)
-            print(f"Keeping current prompt (validation accuracy: {current_val_performance:.3f} >= {previous_val_performance:.3f})")
+            print(f"Keeping current prompt. Accuracy: prev:{previous_val_performance:.3f}, current:{current_val_performance:.3f} | Tokens: prev:{previous_token_count:.1f}, current:{current_token_count:.1f}")
             return current_val_performance
     
     # If no previous prompt to compare, just return current performance
@@ -477,6 +480,11 @@ def main():
     # Parse arguments
     args = config()
     
+    #store stepwise prompts
+    os.makedirs("optimized_prompt_record", exist_ok=True)
+    prompt_record_file = f'{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.jsonl'
+
+
     # Set random seed
     np.random.seed(args.seed)
     random.seed(args.seed)
@@ -648,6 +656,7 @@ def main():
                 val_accuracy = run_validation_revert(
                     system_prompt=system_prompt,
                     previous_prompt=previous_prompt,
+                    focus_on_accuracy=focus_on_accuracy,
                     model=model,
                     eval_fn=task_eval_fn,
                     val_set=val_set,
@@ -659,6 +668,17 @@ def main():
             # Break after a few steps to keep the process manageable
             if step >= 2:
                 break
+
+            with open(prompt_record_file, 'a') as f:
+                record = {
+                    "epoch": epoch,
+                    "step": step,
+                    "prompt": system_prompt.value,
+                    "focus": focus_name,
+                    "accuracy": accuracy,
+                    "token_count": token_count
+                }
+                json.dump(record, f, indent=2)
         
         # Evaluate on validation set if not done already in run_validation_revert
         if not args.run_validation:
@@ -677,6 +697,7 @@ def main():
         
         epoch_data["focus"] = focus_name
         results["epochs"].append(epoch_data)
+        
     
     # Final evaluation on test set
     final_results, final_metrics = eval_dataset(
