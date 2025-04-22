@@ -1,13 +1,53 @@
 import os
 import json
+import re
 import pandas as pd
 import subprocess
 import platformdirs
 import textgrad as tg
+from textgrad.textgrad.engine.base import EngineLM
 from .base import Dataset
 
 # The below metric is taken from DSPy for consistenc
 # and modified to work with TG-graphs
+
+def llm_equality_fn(prediction: tg.Variable, ground_truth_answer: tg.Variable, evaluation_engine: EngineLM = None):
+    """
+    Uses an LLM to determine if the prediction matches the ground truth answer.
+    
+    Args:
+        prediction: Variable containing the model's response
+        ground_truth_answer: Variable containing the correct answer
+        evaluation_engine: Optional LLM engine to use for evaluation
+        
+    Returns:
+        int: 1 if answers are equivalent, 0 otherwise
+    """
+    # Get the prediction text and ground truth
+    prediction_text = prediction.value
+    ground_truth = ground_truth_answer.value
+        
+    # For numerical or more complex answers, use LLM to check equivalence
+    # Create a prompt to check answer equivalence
+    prompt = f"""
+    Determine if these two answers are equivalent:
+    
+    Answer 1: {prediction_text}
+    Answer 2: {ground_truth}
+    
+    You must output ONLY a single digit: 1 if the answers are equivalent (even if expressed differently), or 0 if they are not equivalent.
+    """
+    
+    # Get the response from the LLM
+    response = evaluation_engine(prompt)
+    
+    # Extract the result (1 or 0)
+    result_match = re.search(r'[01]', response)
+    if result_match:
+        return int(result_match.group(0))
+    else:
+        # Fallback to string matching if LLM response doesn't contain a clear answer
+        return int(ground_truth in prediction_text)
 
 def parse_integer_answer(answer: str, only_first_line: bool=False):
     try:

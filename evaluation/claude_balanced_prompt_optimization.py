@@ -179,7 +179,6 @@ class AccuracyLoss(tg.autograd.Module):
             "Question: {question}\n\n"
             "Model Response: {response}\n\n"
             "Correct Answer: {correct_answer}\n\n"
-            "The model's answer is {correctness}.\n\n"
             "Provide specific feedback on how the system prompt could be improved to make the model's "
             "response more accurate while solving this type of problem. Focus on encouraging more "
             "precise reasoning steps, better problem understanding, and reliable calculation methods."
@@ -190,7 +189,6 @@ class AccuracyLoss(tg.autograd.Module):
             "question": None, 
             "response": None, 
             "correct_answer": None,
-            "correctness": None
         }
         
         self.formatted_llm_call = FormattedLLMCall(
@@ -223,7 +221,6 @@ class AccuracyLoss(tg.autograd.Module):
             "question": question,
             "response": response,
             "correct_answer": correct_answer,
-            "correctness": Variable("correct" if is_correct else "incorrect", requires_grad=False, role_description="correctness description")
         }
         
         # Get feedback on accuracy
