@@ -1,16 +1,44 @@
-🚨 TOKEN LIMIT: 50 = AUTOMATIC FAILURE 🚨
-[⬛⬛⬛⬜⬜] TOKENS: [__/50] ← UPDATE AFTER EACH STEP
+🧠 STRATEGIC PROBLEM SOLVING 🧠
 
-PATTERN→FORMULA→CALCULATE ONCE→VERIFY ONCE→STOP
-EMERGENCY STOP at 40 tokens - output best answer
+📊 ASSESS & PLAN: [REQUIRED]
+• Identify problem type: GEOMETRY, ALGEBRA, FACTORIZATION, MONEY/FINANCE, PROBABILITY/STATISTICS, UNIT CONVERSION, etc.
+• Immediately identify all problem constraints (integer solutions, positive values, etc.)
+• For SIMPLE problems: Use streamlined approach but still classify type
+• For COMPLEX problems: Detail relationships, patterns, and solution path
+• Problem-specific planning:
+  - GEOMETRY: Visual reasoning first, identify shapes and properties explicitly
+  - ALGEBRA: Track variable substitutions step-by-step, identify simplest solution method
+  - FACTORIZATION: Test factor pairs systematically before using formulas, identify patterns in coefficients
+  - MONEY/FINANCE: Track dollars and cents separately, be mindful of decimal alignment
+  - UNIT CONVERSION: List all conversion factors with units at start
+  - PROBABILITY/STATISTICS: Clearly identify sample space and events; distinguish combinations/permutations
+• Estimate answer for verification benchmark
+• Map out potential solution paths and choose most direct one
 
-SHORTCUTS:
-• Games: P(win)=p/(p+q) where p=your win chance
-• Recursive: P(A)=1/2+1/2×(1/2×P(A))→3/4×P(A)=1/2→P(A)=2/3
-• Polynomial: (x^n±1)÷(x±1)→x^(n-1)+...+1±remainder
-• Powers: 5^a×2^b=2^(b-a)×10^a when b>a
-• Fractions: a/b±c/d→(ad±bc)/bd→simplify ONCE
+⚡ EXECUTE EFFICIENTLY: [REQUIRED]
+• FORMAT: Store results as "RESULT(description) = value [units]"
+• EFFICIENCY: Avoid redundant calculations, but show ALL critical intermediate steps
+• For algebraic expressions: Show each distribution step explicitly (e.g., x(a+b) → xa + xb)
+• For nested expressions: Work from innermost to outermost, labeling intermediate results
+• Track units consistently throughout all calculations
+• For multiple values: Consider tabulating or organizing in structured format
+• WATCH FOR: Sign errors in algebra, decimal misalignment in money problems, unit consistency in conversions
+• If repeating work: [STOP], restructure approach immediately
 
-RULES: SYMBOLS ONLY ×÷=→+-()√∫ | NEVER recalculate | VERIFY ONCE
+🔄 VERIFY: [REQUIRED]
+• Use a different method than original calculation
+• Verify the answer addresses the specific question asked
+• Problem-specific verification:
+  - GEOMETRY: Alternative decomposition or test points
+  - ALGEBRA/FACTORIZATION: Substitute solutions back or multiply factors to confirm
+  - MONEY/FINANCE: Verify by both summing totals and summing component parts
+  - UNIT CONVERSION: Reverse the conversion chain
+  - PROBABILITY/STATISTICS: Check that probabilities sum to 1 when appropriate
+• For algebraic expressions: Substitute test values (e.g., x=1, x=2) into both original and simplified forms
+• If verification fails: Review steps systematically
 
-eq→calc→ans
+🏁 CONCLUDE: [REQUIRED]
+• FORMAT: "FINAL ANSWER: [value] [units], CONFIDENCE: [high/medium/low] because [verification evidence]"
+• Ensure all parts of the problem are explicitly addressed
+
+PRINCIPLE: Choose a systematic path that balances thoroughness with efficiency - show all critical transformations

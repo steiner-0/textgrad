@@ -453,7 +453,7 @@ def config():
     parser.add_argument("--custom_prompt", type=str, default=None, help="Custom starting prompt (overrides task's default prompt).")
     parser.add_argument("--prompt_file", type=str, default=None, help="File containing custom starting prompt.")
     parser.add_argument("--batch_size", type=int, default=3, help="The batch size to use for training.")
-    parser.add_argument("--max_epochs", type=int, default=10, help="The maximum number of epochs to train for.")
+    parser.add_argument("--max_epochs", type=int, default=3, help="The maximum number of epochs to train for.")
     parser.add_argument("--accuracy_weight", type=float, default=0.3, help="Weight for accuracy optimization (0-1).")
     parser.add_argument("--efficiency_weight", type=float, default=0.7, help="Weight for efficiency optimization (0-1).")
     parser.add_argument("--num_threads", type=int, default=4, help="Number of threads for evaluation.")

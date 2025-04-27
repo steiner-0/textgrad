@@ -5,7 +5,7 @@ import pandas as pd
 import subprocess
 import platformdirs
 import textgrad as tg
-from textgrad.textgrad.engine.base import EngineLM
+from textgrad.engine.base import EngineLM
 from .base import Dataset
 
 # The below metric is taken from DSPy for consistenc
